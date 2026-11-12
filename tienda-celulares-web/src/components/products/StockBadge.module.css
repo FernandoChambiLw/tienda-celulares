@@ -1,0 +1,17 @@
+.badge {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.ok {
+  background: var(--green-100);
+  color: var(--green-900);
+}
+
+.danger {
+  background: #fde3df;
+  color: var(--danger);
+}

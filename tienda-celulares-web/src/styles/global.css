@@ -1,0 +1,176 @@
+/* ---------- Tokens de diseño ----------
+   Paleta verde (escala 50-950) + crema cálido + terracota para ofertas.
+   Los nombres antiguos (--brand, --ink, --line...) se mantienen como alias,
+   así los componentes no necesitan saber qué color exacto usan. */
+:root {
+  --green-50: #e8fcf6;
+  --green-100: #c0f7e5;
+  --green-200: #97f2d5;
+  --green-300: #6fecc4;
+  --green-400: #46e7b4;
+  --green-500: #1ddea1;
+  --green-600: #18b986;
+  --green-700: #139069;
+  --green-800: #0d684b;
+  --green-900: #083f2e;
+  --green-950: #031710;
+
+  --cream: #fbf7ef;
+  --sand: #f3ebdc;
+  --amber-100: #fcebc8;
+  --amber-500: #f2a93b;
+  --clay: #c8541f;
+
+  --bg: var(--cream);
+  --surface: #fffdf8;
+  --ink: var(--green-950);
+  --muted: #52665c;
+  --line: #e6ddcb;
+  --brand: var(--green-800);
+  --brand-dark: var(--green-900);
+  --brand-soft: var(--green-100);
+  --accent: var(--clay);
+  --ok: var(--green-800);
+  --warn: #8a5200;
+  --danger: #b42318;
+
+  --radius: 20px;
+  --radius-lg: 28px;
+  --shadow: 0 1px 2px rgba(3, 23, 16, 0.06), 0 14px 30px -14px rgba(3, 23, 16, 0.22);
+
+  --font-display: 'Bricolage Grotesque Variable', 'Figtree Variable', system-ui, sans-serif;
+  --font: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 1rem;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- Utilidades compartidas ---------- */
+
+.container {
+  width: min(1160px, 100% - 32px);
+  margin-inline: auto;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn--primary {
+  background: var(--green-800);
+  color: var(--cream);
+}
+
+.btn--primary:hover {
+  background: var(--green-900);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--green-950);
+  color: var(--green-950);
+}
+
+.btn--ghost:hover {
+  background: var(--green-950);
+  color: var(--cream);
+}
+
+.btn--cream {
+  background: var(--cream);
+  color: var(--green-950);
+}
+
+.btn--cream:hover {
+  background: var(--green-200);
+}
+
+.btn--small {
+  padding: 9px 18px;
+  font-size: 0.92rem;
+}
+
+.eyebrow {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: var(--green-100);
+  color: var(--green-900);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+:focus-visible {
+  outline: 3px solid var(--green-400);
+  outline-offset: 3px;
+}
+
+/* Quien tiene desactivadas las animaciones en su dispositivo no las verá. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

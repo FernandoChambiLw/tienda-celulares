@@ -1,0 +1,220 @@
+.hero {
+  display: grid;
+  align-items: center;
+  gap: 40px;
+  padding-block: 8px 24px;
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.title {
+  max-width: 14ch;
+  font-size: clamp(2.5rem, 7.5vw, 4.6rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.title em {
+  font-style: normal;
+  color: var(--green-700);
+  text-decoration: underline;
+  text-decoration-color: var(--green-300);
+  text-decoration-thickness: 0.14em;
+  text-underline-offset: 0.12em;
+}
+
+.lead {
+  max-width: 46ch;
+  color: var(--muted);
+  font-size: 1.12rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.section {
+  margin-top: 72px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionTitle {
+  margin-bottom: 24px;
+  font-size: clamp(1.7rem, 4vw, 2.3rem);
+}
+
+.more {
+  color: var(--green-800);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Bloques de distinto tamaño: el primero es el protagonista. */
+.tiles {
+  display: grid;
+  gap: 16px;
+}
+
+.tile {
+  position: relative;
+  min-height: 190px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  transition: transform 0.2s;
+}
+
+.tile:hover {
+  transform: translateY(-4px);
+}
+
+.main {
+  background: var(--green-800);
+  color: var(--cream);
+}
+
+.sand {
+  background: var(--sand);
+}
+
+.amber {
+  background: var(--amber-100);
+}
+
+.tileLink {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  height: 100%;
+  padding: 24px;
+  text-decoration: none;
+}
+
+.tileTitle {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.tileText {
+  max-width: 24ch;
+  opacity: 0.85;
+}
+
+.tileGo {
+  margin-top: auto;
+  padding-top: 14px;
+  font-weight: 800;
+}
+
+.tileArt {
+  position: absolute;
+  right: -10px;
+  bottom: -16px;
+  width: 46%;
+  max-width: 190px;
+  transform: rotate(8deg);
+}
+
+.steps {
+  display: grid;
+  gap: 28px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 20px;
+  border-top: 2px solid var(--green-950);
+}
+
+.step h3 {
+  font-size: 1.35rem;
+}
+
+.step p {
+  color: var(--muted);
+}
+
+.stepNumber {
+  color: var(--green-700);
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  padding: clamp(28px, 5vw, 56px);
+  border-radius: var(--radius-lg);
+  background: var(--green-950);
+  color: var(--cream);
+}
+
+.ctaTitle {
+  margin-bottom: 8px;
+  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+}
+
+.ctaText {
+  max-width: 44ch;
+  color: #a9c2b8;
+  font-size: 1.05rem;
+}
+
+@media (min-width: 560px) {
+  .steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 820px) {
+  .hero {
+    grid-template-columns: 1.1fr 0.9fr;
+    padding-block: 24px 24px;
+  }
+
+  .tiles {
+    grid-template-columns: 1.4fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .main {
+    grid-row: span 2;
+  }
+
+  .main .tileTitle {
+    font-size: 2.2rem;
+  }
+
+  .main .tileArt {
+    width: 52%;
+    max-width: 260px;
+  }
+
+  .cta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

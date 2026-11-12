@@ -1,0 +1,26 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.two {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.h2 {
+  margin-bottom: 12px;
+  font-size: 1.15rem;
+}
+
+.muted {
+  color: var(--muted);
+}

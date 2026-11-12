@@ -1,0 +1,16 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 20px;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  background: #fef2f2;
+  text-align: center;
+}
+
+.message {
+  color: var(--danger);
+  font-weight: 500;
+}

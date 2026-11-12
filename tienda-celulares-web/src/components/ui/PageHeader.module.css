@@ -1,0 +1,12 @@
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--muted);
+}

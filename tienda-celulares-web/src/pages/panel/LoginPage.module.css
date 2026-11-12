@@ -1,0 +1,65 @@
+.page {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px 16px;
+  background: var(--green-950);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(420px, 100%);
+  padding: 36px 32px;
+  border-radius: var(--radius-lg);
+  background: var(--cream);
+}
+
+.title {
+  font-size: 2rem;
+}
+
+.subtitle {
+  margin-top: -10px;
+  color: var(--muted);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.field input {
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  font: inherit;
+}
+
+.error {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fde4e1;
+  color: var(--danger);
+  font-size: 0.92rem;
+}
+
+.notice {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--amber-100);
+  color: var(--warn);
+  font-size: 0.88rem;
+}
+
+.back {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}

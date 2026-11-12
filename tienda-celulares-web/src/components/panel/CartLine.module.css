@@ -1,0 +1,79 @@
+.line {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.top,
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.remove {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--danger);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.imeis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.imeis select,
+.field input {
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--cream);
+  font: inherit;
+}
+
+.chip {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--green-100);
+  color: var(--green-900);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.field input {
+  width: 84px;
+}
+
+.price {
+  font-weight: 700;
+  text-align: right;
+}
+
+.price small {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+}
