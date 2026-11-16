@@ -17,13 +17,19 @@
   pulsar, y el naranja para el precio rebajado, de modo que nada compita por la atención.
 
 ## Funciones del sitio
-Público: portada, catálogo (búsqueda, tipo, categoría, marca, rango de precio, orden, paginación), detalle con productos relacionados,
+Público: portada, **carrito de compras y pedidos** (el pedido queda registrado y se envía por WhatsApp), catálogo (búsqueda, tipo, categoría, marca, rango de precio, orden, paginación), detalle con productos relacionados,
 **comparador de hasta 3 productos**, promociones, **consulta del estado de una reparación** (N° de orden + CI), contacto y botón flotante de WhatsApp.
 
-Panel interno (por rol): resumen con ventas de los últimos 7 días y **6 meses**, ventas (detalle y anulación), inventario, productos (con foto),
+Panel interno (por rol): **pedidos de la tienda en línea** (Nuevo → Confirmado → Entregado/Cancelado), **comprobante de venta imprimible/PDF**, resumen con ventas de los últimos 7 días y **6 meses**, ventas (detalle y anulación), inventario, productos (con foto),
 reparaciones; todas las tablas con **buscador, paginación, exportar a CSV e imprimir/PDF**; **cambio de contraseña** de cada usuario.
 
 ## Qué debes completar tú (el examen pide documentar el uso de OpenCode)
 1. Los *prompts* reales que le diste a OpenCode, en orden.
 2. Un ajuste manual que hiciste tú y por qué.
 3. Capturas del sitio funcionando.
+
+## Base de datos: extensión 04 (36 tablas)
+`celulares_api/db/04_pedidos_fotos.sql` agrega 3 tablas sobre las 33 originales y una vista:
+`pedido`, `detalle_pedido`, `producto_foto` y `v_pedido_total`. Es idempotente y la aplica `init-db` en cada arranque.
+Las fotos ahora se guardan en la base (`producto_foto`, BYTEA, máx. 3 MB) y no en disco, así no se pierden al redesplegar.
+El diagrama ER y el respaldo entregados corresponden a las 33 tablas; si se entrega esta versión, hay que regenerarlos.

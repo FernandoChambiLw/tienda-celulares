@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useCompare } from '../../hooks/useCompare';
+import { useShopCart } from '../../hooks/useShopCart';
 import PriceTag from './PriceTag';
 import ProductImage from './ProductImage';
 import StockBadge from './StockBadge';
@@ -8,6 +9,7 @@ import styles from './ProductCard.module.css';
 // Tarjeta hecha con el componente `card` de Bulma. El botón "Comparar" suma el producto al comparador.
 export default function ProductCard({ product }) {
   const compare = useCompare();
+  const cart = useShopCart();
   const chosen = compare.has(product.id);
 
   return (
@@ -32,6 +34,14 @@ export default function ProductCard({ product }) {
       </div>
 
       <footer className="card-footer no-print">
+        <button
+          type="button"
+          className={`card-footer-item button is-ghost ${styles.compare}`}
+          onClick={() => cart.add(product)}
+          disabled={!product.disponible}
+        >
+          {cart.has(product.id) ? '＋ Agregar otro' : 'Agregar al carrito'}
+        </button>
         <button
           type="button"
           className={`card-footer-item button is-ghost ${styles.compare}`}

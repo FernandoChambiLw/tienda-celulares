@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { q } from '../db.js';
-import { ah, notFound, toInt, pageParams } from '../utils.js';
+import { ah, notFound, toInt, pageParams, bad, HttpError } from '../utils.js';
+import { tx } from '../db.js';
 
 const router = Router();
 
@@ -57,6 +58,74 @@ router.get('/filtros', ah(async (_req, res) => {
     q(`SELECT DISTINCT c.nombre FROM categoria c JOIN producto p USING (id_categoria) WHERE p.estado='Activo' ORDER BY 1`),
   ]);
   res.json({ marcas: marcas.rows.map((r) => r.nombre), categorias: categorias.rows.map((r) => r.nombre) });
+}));
+
+// Foto de un producto (guardada en la base). El parámetro ?v= es solo para renovar la caché.
+router.get('/foto/:id', ah(async (req, res) => {
+  const f = (await q('SELECT tipo_mime, datos FROM producto_foto WHERE id_producto = $1', [toInt(req.params.id, 'id')])).rows[0];
+  if (!f) throw notFound('Sin foto');
+  res.set({ 'Content-Type': f.tipo_mime, 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff' });
+  res.send(f.datos);
+}));
+
+// ---------- Pedidos desde el carrito de la web ----------
+// Se registra el pedido con el precio vigente AHORA (el servidor lo calcula; nunca se confía en el
+// precio que manda el navegador). El stock no se descuenta: eso ocurre cuando el vendedor registra la venta.
+const limiterPedido = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Hiciste muchos pedidos seguidos, espera unos minutos' },
+});
+
+router.post('/pedidos', limiterPedido, ah(async (req, res) => {
+  const b = req.body ?? {};
+  const nombre = String(b.nombre ?? '').trim();
+  const telefono = String(b.telefono ?? '').replace(/[\s\-()]/g, '');
+  const ci = String(b.ci ?? '').trim() || null;
+  const notas = String(b.notas ?? '').trim() || null;
+  if (nombre.length < 2 || nombre.length > 100) throw bad('Escribe tu nombre (2 a 100 letras)');
+  if (!/^\+?\d{7,15}$/.test(telefono)) throw bad('Escribe un teléfono válido, solo números (7 a 15 dígitos)');
+  if (ci && ci.length > 20) throw bad('El CI es demasiado largo');
+  if (notas && notas.length > 300) throw bad('Las notas admiten hasta 300 caracteres');
+  if (!Array.isArray(b.items) || b.items.length < 1 || b.items.length > 20) throw bad('El pedido debe tener entre 1 y 20 productos');
+
+  const items = new Map();
+  for (const it of b.items) {
+    const id = Number.parseInt(it?.id_producto, 10);
+    const cantidad = Number.parseInt(it?.cantidad, 10);
+    if (!Number.isInteger(id) || id <= 0) throw bad('Producto inválido en el pedido');
+    if (!Number.isInteger(cantidad) || cantidad < 1 || cantidad > 10) throw bad('Cada producto admite de 1 a 10 unidades');
+    items.set(id, (items.get(id) ?? 0) + cantidad);
+  }
+  const ids = [...items.keys()];
+
+  const out = await tx(async (c) => {
+    const prods = (await q(`${BASE} AND p.id_producto = ANY($1)`, [ids], c)).rows;
+    const stock = new Map((await q('SELECT id_producto, stock_total FROM v_stock_producto WHERE id_producto = ANY($1)', [ids], c))
+      .rows.map((r) => [r.id_producto, r.stock_total]));
+    const byId = new Map(prods.map((p) => [p.id_producto, p]));
+    for (const [id, cantidad] of items) {
+      const p = byId.get(id);
+      if (!p) throw new HttpError(409, 'Un producto del carrito ya no está disponible. Revisa tu carrito.');
+      if (cantidad > stock.get(id)) throw new HttpError(409, `Solo quedan ${stock.get(id)} unidades de ${p.nombre}.`);
+    }
+    const ped = (await q(
+      'INSERT INTO pedido (nombre_cliente, telefono, ci, notas) VALUES ($1,$2,$3,$4) RETURNING id_pedido, fecha_hora',
+      [nombre, telefono, ci, notas], c)).rows[0];
+    let total = 0;
+    const lineas = [];
+    for (const [id, cantidad] of items) {
+      const p = byId.get(id);
+      await q('INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, precio_unitario) VALUES ($1,$2,$3,$4)',
+        [ped.id_pedido, id, cantidad, p.precio_final], c);
+      total += cantidad * p.precio_final;
+      lineas.push({ id_producto: id, nombre: p.nombre, cantidad, precio_unitario: p.precio_final });
+    }
+    return { id_pedido: ped.id_pedido, fecha_hora: ped.fecha_hora, total: Math.round(total * 100) / 100, items: lineas };
+  });
+  res.status(201).json(out);
 }));
 
 // Consulta pública del estado de una reparación: exige el N° de orden Y el CI del cliente,

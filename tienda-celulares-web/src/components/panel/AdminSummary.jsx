@@ -19,6 +19,7 @@ export default function AdminSummary() {
           <div className={styles.stats}>
             <StatCard label="Ventas de hoy" value={formatBs(Number(data.ventas_hoy.total))} hint={`${data.ventas_hoy.ventas} ventas`} />
             <StatCard label="Ventas del mes" value={formatBs(Number(data.ventas_mes.total))} hint={`${data.ventas_mes.ventas} ventas`} />
+            <StatCard label="Pedidos nuevos" value={data.pedidos_nuevos ?? 0} hint="de la tienda en línea" tone={data.pedidos_nuevos ? 'warn' : undefined} />
             <StatCard label="Bajo stock" value={data.productos_bajo_stock} hint="productos por reponer" tone={data.productos_bajo_stock ? 'warn' : undefined} />
             <StatCard label="Garantías por vencer" value={data.garantias_por_vencer_30d} hint="en los próximos 30 días" />
           </div>

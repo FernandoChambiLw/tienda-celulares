@@ -26,8 +26,11 @@ try {
       console.log(`[init-db] Ejecutando ${file} ...`);
       await client.query(fs.readFileSync(path.join(dbDir, file), 'utf8'));
     }
-    console.log('[init-db] Base inicializada (33 tablas + datos de prueba).');
+    console.log('[init-db] Base inicializada (36 tablas + datos de prueba).');
   }
+  // Extensiones posteriores (pedidos, fotos): idempotentes, se aplican siempre.
+  console.log('[init-db] Aplicando 04_pedidos_fotos.sql ...');
+  await client.query(fs.readFileSync(path.join(dbDir, '04_pedidos_fotos.sql'), 'utf8'));
 } catch (e) {
   console.error('[init-db] ERROR:', e.message);
   process.exitCode = 1;

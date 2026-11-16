@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { site } from '../../config/site';
 import { useCompare } from '../../hooks/useCompare';
+import { useShopCart } from '../../hooks/useShopCart';
 import { buildWhatsAppLink } from '../../utils/whatsapp';
 import Logo from './Logo';
 import styles from './Header.module.css';
@@ -18,6 +19,7 @@ const LINKS = [
 export default function Header() {
   const [open, setOpen] = useState(false);
   const compare = useCompare();
+  const cart = useShopCart();
   const close = () => setOpen(false);
 
   return (
@@ -57,6 +59,10 @@ export default function Header() {
             </div>
 
             <div className="navbar-end">
+              <Link to="/carrito" className="navbar-item" onClick={close}>
+                Carrito&nbsp;
+                <span className={`tag is-rounded ${cart.count ? 'is-primary' : 'is-dark'}`}>{cart.count}</span>
+              </Link>
               {compare.ids.length > 0 && (
                 <Link to="/comparar" className="navbar-item" onClick={close}>
                   Comparar&nbsp;<span className="tag is-primary is-rounded">{compare.ids.length}</span>

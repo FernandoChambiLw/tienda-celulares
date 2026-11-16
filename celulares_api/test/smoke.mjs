@@ -44,6 +44,35 @@ const rosa = (await login('rosa', 'Clave123!')).body.token;
 check('tokens obtenidos', admin && lucia && marco && rosa);
 check('sin token → 401', (await api('GET', '/api/productos')).status === 401);
 
+console.log('Pedidos y fotos');
+const prod = (await api('GET', '/api/publico/catalogo?orden=precio_asc')).body[0];
+const ped = await api('POST', '/api/publico/pedidos', { body: { nombre: 'Ana Prueba', telefono: '71234567', items: [{ id_producto: prod.id_producto, cantidad: 1 }] } });
+check('pedido público creado', ped.status === 201 && ped.body.id_pedido && ped.body.total === Number(prod.precio_final), ped.body);
+check('pedido sin teléfono → 400', (await api('POST', '/api/publico/pedidos', { body: { nombre: 'Ana', telefono: 'x', items: [{ id_producto: prod.id_producto, cantidad: 1 }] } })).status === 400);
+check('pedido con cantidad excesiva → 400', (await api('POST', '/api/publico/pedidos', { body: { nombre: 'Ana', telefono: '71234567', items: [{ id_producto: prod.id_producto, cantidad: 99 }] } })).status === 400);
+check('pedido con producto inexistente → 409', (await api('POST', '/api/publico/pedidos', { body: { nombre: 'Ana', telefono: '71234567', items: [{ id_producto: 999999, cantidad: 1 }] } })).status === 409);
+check('el precio lo calcula el servidor', (await api('POST', '/api/publico/pedidos', { body: { nombre: 'Ana', telefono: '71234567', items: [{ id_producto: prod.id_producto, cantidad: 2, precio_unitario: 1 }] } })).body.total === 2 * Number(prod.precio_final));
+check('pedidos exigen sesión', (await api('GET', '/api/pedidos')).status === 401);
+check('técnico no ve pedidos → 403', (await api('GET', '/api/pedidos', { token: marco })).status === 403);
+const lista = await api('GET', '/api/pedidos?estado=Nuevo', { token: lucia });
+check('vendedor lista pedidos nuevos', lista.status === 200 && lista.body.some((p) => p.id_pedido === ped.body.id_pedido), lista.body);
+const det = await api('GET', `/api/pedidos/${ped.body.id_pedido}`, { token: lucia });
+check('detalle del pedido con ítems', det.body.items?.length === 1 && det.body.estado === 'Nuevo', det.body);
+check('Nuevo → Entregado no se permite (409)', (await api('PATCH', `/api/pedidos/${ped.body.id_pedido}/estado`, { token: lucia, body: { estado: 'Entregado' } })).status === 409);
+check('Nuevo → Confirmado', (await api('PATCH', `/api/pedidos/${ped.body.id_pedido}/estado`, { token: lucia, body: { estado: 'Confirmado' } })).status === 200);
+check('Confirmado → Entregado', (await api('PATCH', `/api/pedidos/${ped.body.id_pedido}/estado`, { token: lucia, body: { estado: 'Entregado' } })).status === 200);
+check('Entregado es final (409)', (await api('PATCH', `/api/pedidos/${ped.body.id_pedido}/estado`, { token: lucia, body: { estado: 'Cancelado' } })).status === 409);
+// Foto guardada en la base: 1x1 PNG
+const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+const fd = new FormData(); fd.append('foto', new Blob([png], { type: 'image/png' }), 'x.png');
+const up = await fetch(`${base}/api/productos/${prod.id_producto}/foto`, { method: 'POST', headers: { Authorization: `Bearer ${rosa}` }, body: fd });
+const upJson = await up.json();
+check('foto se guarda en la base', up.status === 200 && upJson.foto_url.startsWith('/api/publico/foto/'), upJson);
+const got = await fetch(base + upJson.foto_url);
+check('foto se sirve con su tipo', got.status === 200 && got.headers.get('content-type') === 'image/png' && Buffer.from(await got.arrayBuffer()).equals(png));
+const fd2 = new FormData(); fd2.append('foto', new Blob([Buffer.from('no soy una imagen')], { type: 'image/png' }), 'x.png');
+check('archivo falso se rechaza (400)', (await fetch(`${base}/api/productos/${prod.id_producto}/foto`, { method: 'POST', headers: { Authorization: `Bearer ${rosa}` }, body: fd2 })).status === 400);
+
 console.log('Catálogo público');
 const cat = await api('GET', '/api/publico/catalogo');
 check('catálogo sin login', cat.status === 200 && cat.body.length > 0);

@@ -12,6 +12,7 @@ const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
 const ComparePage = lazy(() => import('./pages/ComparePage'));
 const RepairStatusPage = lazy(() => import('./pages/RepairStatusPage'));
+const CartPage = lazy(() => import('./pages/CartPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
@@ -22,6 +23,8 @@ const NewSalePage = lazy(() => import('./pages/panel/NewSalePage'));
 const InventoryPage = lazy(() => import('./pages/panel/InventoryPage'));
 const ProductsAdminPage = lazy(() => import('./pages/panel/ProductsAdminPage'));
 const ProductFormPage = lazy(() => import('./pages/panel/ProductFormPage'));
+const OrdersPage = lazy(() => import('./pages/panel/OrdersPage'));
+const ReceiptPage = lazy(() => import('./pages/panel/ReceiptPage'));
 const RepairsPage = lazy(() => import('./pages/panel/RepairsPage'));
 
 const { admin, seller, tech, storekeeper } = ROLES;
@@ -36,6 +39,7 @@ export default function App() {
         <Route path="catalogo/:id" element={<ProductDetailPage />} />
         <Route path="promociones" element={<PromotionsPage />} />
         <Route path="comparar" element={<ComparePage />} />
+        <Route path="carrito" element={<CartPage />} />
         <Route path="reparacion" element={<RepairStatusPage />} />
         <Route path="contacto" element={<ContactPage />} />
         <Route path="*" element={<NotFoundPage />} />
@@ -48,6 +52,8 @@ export default function App() {
           <Route element={<RequireAuth roles={[admin, seller]} />}>
             <Route path="ventas" element={<SalesPage />} />
             <Route path="ventas/nueva" element={<NewSalePage />} />
+            <Route path="ventas/:id/comprobante" element={<ReceiptPage />} />
+            <Route path="pedidos" element={<OrdersPage />} />
           </Route>
           <Route path="inventario" element={<InventoryPage />} />
           <Route element={<RequireAuth roles={[admin, storekeeper]} />}>

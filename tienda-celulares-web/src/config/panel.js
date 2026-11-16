@@ -12,6 +12,7 @@ const ALL = Object.values(ROLES);
 export const PANEL_NAV = [
   { to: '/panel', label: 'Resumen', end: true, roles: ALL },
   { to: '/panel/ventas', label: 'Ventas', roles: [ROLES.admin, ROLES.seller] },
+  { to: '/panel/pedidos', label: 'Pedidos', roles: [ROLES.admin, ROLES.seller] },
   { to: '/panel/inventario', label: 'Inventario', roles: ALL },
   { to: '/panel/productos', label: 'Productos', roles: [ROLES.admin, ROLES.storekeeper] },
   { to: '/panel/reparaciones', label: 'Reparaciones', roles: [ROLES.admin, ROLES.tech] },

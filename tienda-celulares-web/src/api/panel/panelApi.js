@@ -44,3 +44,9 @@ export const lookupsApi = {
 export const repairsApi = {
   list: (params) => request('/reparaciones', { params }),
 };
+
+export const ordersApi = {
+  list: (params) => request('/pedidos', { params }),
+  get: (id) => request(`/pedidos/${id}`),
+  setStatus: (id, estado) => request(`/pedidos/${id}/estado`, { method: 'PATCH', body: { estado } }),
+};

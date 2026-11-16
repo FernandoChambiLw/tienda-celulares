@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { salesApi } from '../../api/panel/panelApi';
 import { useAuth } from '../../auth/AuthContext';
 import { ROLES } from '../../config/panel';
@@ -68,6 +69,9 @@ export default function SaleDetailDialog({ saleId, onClose, onChanged }) {
                   Anular venta
                 </button>
               )}
+              <Link to={`/panel/ventas/${sale.id_venta}/comprobante`} className="button is-primary is-outlined is-small is-rounded">
+                Comprobante
+              </Link>
               <button type="button" className="button is-primary is-small is-rounded" onClick={() => ref.current.close()}>
                 Cerrar
               </button>

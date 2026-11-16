@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import multer from 'multer';
-import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { q, tx } from '../db.js';
 import { ah, required, pick, notFound, toInt, bad, insertSql, updateSql, pageParams } from '../utils.js';
@@ -114,26 +113,41 @@ router.delete('/:id', requireRole(), ah(async (req, res) => {
 }));
 
 // ---------- Foto ----------
-const EXT = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp' };
-fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+// La imagen se guarda en la base (tabla producto_foto), no en disco: así sobrevive a los
+// reinicios y redespliegues del servidor. Se sirve en GET /api/publico/foto/:id.
+const MIMES = ['image/jpeg', 'image/png', 'image/webp'];
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: UPLOADS_DIR,
-    filename: (_req, file, cb) => cb(null, `${crypto.randomUUID()}${EXT[file.mimetype]}`),
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: 3 * 1024 * 1024 },
   fileFilter: (_req, file, cb) =>
-    EXT[file.mimetype] ? cb(null, true) : cb(bad('Solo se aceptan imágenes JPG, PNG o WEBP')),
+    MIMES.includes(file.mimetype) ? cb(null, true) : cb(bad('Solo se aceptan imágenes JPG, PNG o WEBP')),
 });
+
+// Comprueba que el contenido sea realmente una imagen (no basta con el tipo que declara el navegador).
+function esImagenReal(buf, mime) {
+  if (mime === 'image/jpeg') return buf[0] === 0xff && buf[1] === 0xd8;
+  if (mime === 'image/png') return buf.subarray(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47]));
+  return buf.subarray(0, 4).toString('ascii') === 'RIFF' && buf.subarray(8, 12).toString('ascii') === 'WEBP';
+}
 
 // POST /api/productos/:id/foto  (multipart, campo "foto")
 router.post('/:id/foto', requireRole('Almacenero'), upload.single('foto'), ah(async (req, res) => {
   if (!req.file) throw bad('Envía la imagen en el campo "foto"');
+  if (!esImagenReal(req.file.buffer, req.file.mimetype)) throw bad('El archivo no es una imagen válida');
   const id = toInt(req.params.id, 'id');
   const old = await q('SELECT foto_url FROM producto WHERE id_producto = $1', [id]);
-  if (!old.rows[0]) { fs.unlink(req.file.path, () => {}); throw notFound('Producto no encontrado'); }
-  const url = `/uploads/${req.file.filename}`;
-  await q('UPDATE producto SET foto_url = $1 WHERE id_producto = $2', [url, id]);
+  if (!old.rows[0]) throw notFound('Producto no encontrado');
+  // ?v= cambia con cada foto nueva: así el navegador no muestra la anterior desde su caché.
+  const url = `/api/publico/foto/${id}?v=${Date.now()}`;
+  await tx(async (c) => {
+    await q(
+      `INSERT INTO producto_foto (id_producto, tipo_mime, datos) VALUES ($1, $2, $3)
+       ON CONFLICT (id_producto) DO UPDATE SET tipo_mime = EXCLUDED.tipo_mime, datos = EXCLUDED.datos,
+                                               actualizada = CURRENT_TIMESTAMP`,
+      [id, req.file.mimetype, req.file.buffer], c);
+    await q('UPDATE producto SET foto_url = $1 WHERE id_producto = $2', [url, id], c);
+  });
+  // Si el producto tenía una foto antigua guardada en disco (versión anterior), se limpia.
   if (old.rows[0].foto_url?.startsWith('/uploads/'))
     fs.unlink(`${UPLOADS_DIR}/${old.rows[0].foto_url.slice(9)}`, () => {});
   res.json({ foto_url: url });

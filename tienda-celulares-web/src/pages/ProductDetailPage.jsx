@@ -8,6 +8,7 @@ import AsyncView from '../components/ui/AsyncView';
 import EmptyState from '../components/ui/EmptyState';
 import { site } from '../config/site';
 import { useCompare } from '../hooks/useCompare';
+import { useShopCart } from '../hooks/useShopCart';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useProduct } from '../hooks/useProducts';
 import { buildWhatsAppLink } from '../utils/whatsapp';
@@ -19,6 +20,7 @@ export default function ProductDetailPage() {
   const { id } = useParams();
   const { data: product, loading, error, reload } = useProduct(id);
   const compare = useCompare();
+  const cart = useShopCart();
 
   usePageTitle(product?.nombre);
 
@@ -78,8 +80,16 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="buttons mt-5">
-                  <a
+                  <button
+                    type="button"
                     className="button is-primary is-medium is-rounded"
+                    onClick={() => cart.add(product)}
+                    disabled={!product.disponible}
+                  >
+                    {cart.has(product.id) ? 'Agregar otra unidad' : 'Agregar al carrito'}
+                  </button>
+                  <a
+                    className="button is-primary is-outlined is-medium is-rounded"
                     href={buildWhatsAppLink(
                       site.whatsapp,
                       `Hola, me interesa ${product.nombre} (código ${product.codigo}). ¿Está disponible?`,
