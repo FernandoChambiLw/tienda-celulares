@@ -1,8 +1,6 @@
-import styles from './StockBadge.module.css';
-
 export default function StockBadge({ available }) {
   return (
-    <span className={`${styles.badge} ${available ? styles.ok : styles.danger}`}>
+    <span className={`tag is-rounded ${available ? 'is-success is-light' : 'is-danger is-light'}`}>
       {available ? 'Disponible' : 'Agotado'}
     </span>
   );

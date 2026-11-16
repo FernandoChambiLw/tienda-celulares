@@ -24,7 +24,7 @@ const COLOR_HEX = {
   azul: '#2e5fa3',
   medianoche: '#1b2230',
   gris: '#7c8480',
-  transparente: '#8fb3a5',
+  transparente: '#9bb8d9',
   rojo: '#c23b2e',
   verde: '#1f7a57',
   dorado: '#c9a24a',

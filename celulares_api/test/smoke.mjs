@@ -26,6 +26,15 @@ const check = (name, cond, extra) => {
 };
 const login = async (u, p) => (await api('POST', '/api/auth/login', { body: { username: u, password: p } }));
 
+console.log('Catálogo: orden y reparación pública');
+const desc = (await api('GET', '/api/publico/catalogo?orden=precio_desc')).body.map((p) => Number(p.precio_venta));
+check('orden por precio descendente', desc.length > 1 && desc.every((v, i) => i === 0 || desc[i - 1] >= v), desc);
+const asc = (await api('GET', '/api/publico/catalogo?orden=precio_asc')).body.map((p) => Number(p.precio_venta));
+check('orden por precio ascendente', asc.length > 1 && asc.every((v, i) => i === 0 || asc[i - 1] <= v), asc);
+check('reparación pública con N° y CI correctos', (await api('GET', '/api/publico/reparacion?codigo=2&ci=8456123')).body.estado === 'En reparacion');
+check('reparación pública con CI ajeno → 404', (await api('GET', '/api/publico/reparacion?codigo=2&ci=9999')).status === 404);
+check('reparación pública sin CI → 404', (await api('GET', '/api/publico/reparacion?codigo=2')).status === 404);
+
 console.log('Autenticación');
 check('login incorrecto → 401', (await login('admin', 'mala')).status === 401);
 const admin = (await login('admin', 'Admin123!')).body.token;
@@ -133,6 +142,7 @@ check('traslado de celular por IMEI', tr.status === 201, tr.body);
 check('conciliación tras traslado', (await api('GET', '/api/inventario/conciliacion', { token: admin })).body.length === 0);
 const res = await api('GET', '/api/reportes/resumen', { token: admin });
 check('resumen del panel', res.status === 200 && res.body.reparaciones_por_estado, res.body);
+check('resumen trae ventas por mes', Array.isArray(res.body.ventas_ultimos_6_meses), res.body)
 check('resumen solo admin', (await api('GET', '/api/reportes/resumen', { token: lucia })).status === 403);
 check('usuarios solo admin', (await api('GET', '/api/usuarios', { token: lucia })).status === 403);
 

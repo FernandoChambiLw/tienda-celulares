@@ -8,7 +8,7 @@ export default function NotFoundPage() {
   return (
     <div className="container">
       <EmptyState title="Página no encontrada" message="La dirección que buscas no existe.">
-        <Link to="/" className="btn btn--primary">
+        <Link to="/" className="button is-primary is-rounded">
           Ir al inicio
         </Link>
       </EmptyState>

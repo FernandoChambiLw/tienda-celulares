@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { q } from '../db.js';
 import { ah, notFound, toInt, pageParams } from '../utils.js';
 
@@ -20,7 +21,7 @@ const BASE = `
          ORDER BY porcentaje_descuento DESC LIMIT 1) pr ON TRUE
    WHERE p.estado = 'Activo' AND s.stock_total > 0`;
 
-// GET /api/publico/catalogo?q=&tipo=&marca=&categoria=&min=&max=
+// GET /api/publico/catalogo?q=&tipo=&marca=&categoria=&min=&max=&orden=nombre|precio_asc|precio_desc
 router.get('/catalogo', ah(async (req, res) => {
   const { limit, offset } = pageParams(req);
   const params = [];
@@ -33,8 +34,11 @@ router.get('/catalogo', ah(async (req, res) => {
   if (req.query.min) add('p.precio_venta >= {P}', Number(req.query.min) || 0);
   if (req.query.max) add('p.precio_venta <= {P}', Number(req.query.max) || 0);
   params.push(limit, offset);
+  // Orden elegido por el visitante: solo valores de esta lista (nunca texto libre en el SQL).
+  const ORDEN = { nombre: 'p.nombre', precio_asc: 'p.precio_venta, p.nombre', precio_desc: 'p.precio_venta DESC, p.nombre' };
+  const order = ORDEN[req.query.orden] ?? ORDEN.nombre;
   const { rows } = await q(
-    `${BASE} ${where.length ? 'AND ' + where.join(' AND ') : ''} ORDER BY p.nombre LIMIT $${params.length - 1} OFFSET $${params.length}`, params);
+    `${BASE} ${where.length ? 'AND ' + where.join(' AND ') : ''} ORDER BY ${order} LIMIT $${params.length - 1} OFFSET $${params.length}`, params);
   res.json(rows);
 }));
 
@@ -53,6 +57,34 @@ router.get('/filtros', ah(async (_req, res) => {
     q(`SELECT DISTINCT c.nombre FROM categoria c JOIN producto p USING (id_categoria) WHERE p.estado='Activo' ORDER BY 1`),
   ]);
   res.json({ marcas: marcas.rows.map((r) => r.nombre), categorias: categorias.rows.map((r) => r.nombre) });
+}));
+
+// Consulta pública del estado de una reparación: exige el N° de orden Y el CI del cliente,
+// así nadie puede ver reparaciones ajenas probando números. Devuelve solo lo que le interesa al cliente.
+const limiterReparacion = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas consultas, espera unos minutos' },
+});
+
+router.get('/reparacion', limiterReparacion, ah(async (req, res) => {
+  const id = Number.parseInt(req.query.codigo, 10);
+  const ci = String(req.query.ci ?? '').trim();
+  if (!Number.isInteger(id) || id <= 0 || !ci) throw notFound('No encontramos una reparación con esos datos');
+  const { rows } = await q(
+    `SELECT r.id_reparacion, r.estado, r.fecha_ingreso, r.fecha_entrega_estimada, r.fecha_entrega_real,
+            r.falla_reportada, r.diagnostico, COALESCE(pc.modelo, ex.modelo) AS modelo, vt.a_cobrar
+       FROM reparacion r
+       JOIN cliente c ON c.id_cliente = r.id_cliente
+       JOIN v_reparacion_total vt USING (id_reparacion)
+       LEFT JOIN unidad_celular u ON u.id_unidad = r.id_unidad
+       LEFT JOIN celular pc ON pc.id_producto = u.id_producto
+       LEFT JOIN equipo_externo ex ON ex.id_equipo = r.id_equipo
+      WHERE r.id_reparacion = $1 AND c.ci = $2`, [id, ci]);
+  if (!rows[0]) throw notFound('No encontramos una reparación con esos datos');
+  res.json(rows[0]);
 }));
 
 export default router;

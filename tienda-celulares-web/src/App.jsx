@@ -10,6 +10,8 @@ const HomePage = lazy(() => import('./pages/HomePage'));
 const CatalogPage = lazy(() => import('./pages/CatalogPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
+const ComparePage = lazy(() => import('./pages/ComparePage'));
+const RepairStatusPage = lazy(() => import('./pages/RepairStatusPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
@@ -33,6 +35,8 @@ export default function App() {
         <Route path="catalogo" element={<CatalogPage />} />
         <Route path="catalogo/:id" element={<ProductDetailPage />} />
         <Route path="promociones" element={<PromotionsPage />} />
+        <Route path="comparar" element={<ComparePage />} />
+        <Route path="reparacion" element={<RepairStatusPage />} />
         <Route path="contacto" element={<ContactPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

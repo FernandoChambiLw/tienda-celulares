@@ -8,7 +8,7 @@
 .blob {
   position: absolute;
   inset: 4% 2% 2% 6%;
-  background: var(--green-200);
+  background: var(--blue-200);
   border-radius: 58% 42% 49% 51% / 52% 46% 54% 48%;
 }
 
@@ -44,7 +44,8 @@
   z-index: 3;
   padding: 8px 16px;
   border-radius: 999px;
-  background: var(--cream);
+  background: var(--paper);
+  color: var(--ink);
   box-shadow: var(--shadow);
   font-size: 0.88rem;
   font-weight: 700;

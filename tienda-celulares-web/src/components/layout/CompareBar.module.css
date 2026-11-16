@@ -1,0 +1,38 @@
+.bar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: min(560px, 100% - 100px);
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #000;
+  color: #fff;
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.5);
+  transform: translateX(-50%);
+}
+
+.bar > span {
+  flex: 1;
+  font-size: 0.92rem;
+}
+
+.bar :global(.buttons) {
+  flex-wrap: nowrap;
+  margin: 0;
+}
+
+@media (max-width: 560px) {
+  .bar {
+    width: calc(100% - 90px);
+    left: 12px;
+    transform: none;
+    border-radius: 18px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}

@@ -25,7 +25,7 @@ export default function PhotoUploader({ currentUrl, file, onChange, onError }) {
       <div className={styles.preview}>
         {src ? <img src={src} alt="Foto del producto" /> : <span>Sin foto</span>}
       </div>
-      <label className="btn btn--ghost btn--small">
+      <label className="button is-primary is-outlined is-small is-rounded">
         {src ? 'Cambiar foto' : 'Elegir foto'}
         <input type="file" accept={TYPES.join(',')} onChange={pick} hidden />
       </label>

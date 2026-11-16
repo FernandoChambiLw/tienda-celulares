@@ -1,10 +1,10 @@
-import styles from './PageHeader.module.css';
-
-export default function PageHeader({ title, subtitle }) {
+// Encabezado de página con las clases `title` y `subtitle` de Bulma.
+export default function PageHeader({ title, subtitle, children }) {
   return (
-    <header className={styles.header}>
-      <h1 className={styles.title}>{title}</h1>
-      {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+    <header className="mb-5">
+      <h1 className="title is-3 mb-2">{title}</h1>
+      {subtitle && <p className="subtitle is-6">{subtitle}</p>}
+      {children}
     </header>
   );
 }

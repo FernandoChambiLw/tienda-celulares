@@ -104,8 +104,8 @@ export default function ProductFormPage() {
 
           {failure && <p className={styles.error} role="alert">{failure}</p>}
           <div className={styles.actions}>
-            <Link className="btn btn--ghost" to="/panel/productos">Cancelar</Link>
-            <button type="submit" className="btn btn--primary" disabled={busy}>{busy ? 'Guardando…' : 'Guardar'}</button>
+            <Link className="button is-primary is-outlined is-rounded" to="/panel/productos">Cancelar</Link>
+            <button type="submit" className="button is-primary is-rounded" disabled={busy}>{busy ? 'Guardando…' : 'Guardar'}</button>
           </div>
         </form>
       </AsyncView>

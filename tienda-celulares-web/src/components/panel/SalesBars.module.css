@@ -24,7 +24,7 @@
   width: 100%;
   min-height: 4px;
   border-radius: 8px 8px 4px 4px;
-  background: var(--green-600);
+  background: var(--blue-600);
 }
 
 .amount {

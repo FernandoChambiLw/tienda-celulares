@@ -1,26 +1,48 @@
 import { Link } from 'react-router-dom';
+import { useCompare } from '../../hooks/useCompare';
 import PriceTag from './PriceTag';
 import ProductImage from './ProductImage';
 import StockBadge from './StockBadge';
 import styles from './ProductCard.module.css';
 
+// Tarjeta hecha con el componente `card` de Bulma. El botón "Comparar" suma el producto al comparador.
 export default function ProductCard({ product }) {
-  return (
-    <Link to={`/catalogo/${product.id}`} className={styles.card}>
-      <div className={styles.media}>
-        <ProductImage product={product} />
-        {product.descuento > 0 && <span className={styles.ribbon}>-{product.descuento}%</span>}
-      </div>
+  const compare = useCompare();
+  const chosen = compare.has(product.id);
 
-      <div className={styles.body}>
+  return (
+    <article className={`card ${styles.card}`}>
+      <Link to={`/catalogo/${product.id}`} className="card-image" aria-label={product.nombre}>
+        <div className={styles.media}>
+          <ProductImage product={product} />
+          {product.descuento > 0 && <span className={styles.ribbon}>-{product.descuento}%</span>}
+        </div>
+      </Link>
+
+      <div className={`card-content ${styles.body}`}>
         <span className={styles.brand}>{product.marca}</span>
-        <h3 className={styles.name}>{product.nombre}</h3>
+        <h3 className={styles.name}>
+          <Link to={`/catalogo/${product.id}`}>{product.nombre}</Link>
+        </h3>
         {product.promoNombre && <span className={styles.promo}>{product.promoNombre}</span>}
         <div className={styles.foot}>
           <PriceTag product={product} />
           <StockBadge available={product.disponible} />
         </div>
       </div>
-    </Link>
+
+      <footer className="card-footer no-print">
+        <button
+          type="button"
+          className={`card-footer-item button is-ghost ${styles.compare}`}
+          onClick={() => compare.toggle(product.id)}
+          disabled={!chosen && compare.full}
+          aria-pressed={chosen}
+          title={!chosen && compare.full ? 'Puedes comparar hasta 3 productos' : undefined}
+        >
+          {chosen ? '✓ En comparación' : 'Comparar'}
+        </button>
+      </footer>
+    </article>
   );
 }

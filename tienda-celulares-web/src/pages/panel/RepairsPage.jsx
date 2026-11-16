@@ -31,6 +31,7 @@ export default function RepairsPage() {
       </div>
       <AsyncView loading={loading} error={error} onRetry={reload}>
         <DataTable
+          title="reparaciones"
           rowKey="id_reparacion"
           rows={data ?? []}
           emptyTitle="Sin reparaciones"

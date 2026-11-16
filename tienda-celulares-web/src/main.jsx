@@ -5,6 +5,8 @@ import { BrowserRouter } from 'react-router-dom';
 // El navegador solo descarga el subconjunto "latin", que cubre el español.
 import '@fontsource-variable/bricolage-grotesque/wght.css';
 import '@fontsource-variable/figtree/wght.css';
+// Bulma (framework CSS) va primero: nuestros estilos se cargan después y pueden ajustarlo.
+import 'bulma/css/bulma.min.css';
 import { AuthProvider } from './auth/AuthContext.jsx';
 import App from './App.jsx';
 import './styles/global.css';

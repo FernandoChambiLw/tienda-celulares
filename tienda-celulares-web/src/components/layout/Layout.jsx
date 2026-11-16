@@ -1,9 +1,11 @@
 import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import Spinner from '../ui/Spinner';
+import CompareBar from './CompareBar';
 import Footer from './Footer';
 import Header from './Header';
 import ScrollToTop from './ScrollToTop';
+import WhatsAppFab from './WhatsAppFab';
 import styles from './Layout.module.css';
 
 export default function Layout() {
@@ -18,6 +20,8 @@ export default function Layout() {
         </Suspense>
       </main>
       <Footer />
+      <CompareBar />
+      <WhatsAppFab />
     </div>
   );
 }

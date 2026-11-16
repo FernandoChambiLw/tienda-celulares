@@ -99,7 +99,26 @@ function listFilters() {
   return { marcas: names('marca'), categorias: names('categoria') };
 }
 
+// Reparación de ejemplo para probar la página «Mi reparación» sin servidor: orden 1, CI 9123456.
+function getRepairStatus({ codigo, ci } = {}) {
+  if (String(codigo) !== '1' || String(ci).trim() !== '9123456') {
+    throw new ApiError('No encontramos una reparación con esos datos', 404);
+  }
+  return {
+    id_reparacion: 1,
+    estado: 'En reparacion',
+    fecha_ingreso: '2026-11-03',
+    fecha_entrega_estimada: '2026-11-06',
+    fecha_entrega_real: null,
+    falla_reportada: 'No carga el equipo',
+    diagnostico: 'Conector de carga dañado',
+    modelo: 'Galaxy A15',
+    a_cobrar: '0.00',
+  };
+}
+
 const routes = [
+  { pattern: /^\/publico\/reparacion$/, handler: (_args, params) => getRepairStatus(params) },
   { pattern: /^\/publico\/catalogo$/, handler: (_args, params) => listCatalog(params) },
   { pattern: /^\/publico\/catalogo\/(\d+)$/, handler: ([id]) => getCatalogItem(Number(id)) },
   { pattern: /^\/publico\/filtros$/, handler: () => listFilters() },

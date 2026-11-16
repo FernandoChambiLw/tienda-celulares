@@ -1,0 +1,20 @@
+.fab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 8px 22px -6px rgba(0, 0, 0, 0.45);
+  transition: transform 0.18s;
+}
+
+.fab:hover {
+  color: #fff;
+  transform: scale(1.08);
+}

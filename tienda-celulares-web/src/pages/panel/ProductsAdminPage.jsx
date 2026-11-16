@@ -37,10 +37,11 @@ export default function ProductsAdminPage() {
         <select className={styles.select} value={estado} onChange={(e) => setEstado(e.target.value)} aria-label="Estado">
           {PRODUCT_STATES.map((s) => <option key={s}>{s}</option>)}
         </select>
-        <Link className="btn btn--primary" to="/panel/productos/nuevo">Nuevo producto</Link>
+        <Link className="button is-primary is-rounded" to="/panel/productos/nuevo">Nuevo producto</Link>
       </div>
       <AsyncView loading={loading} error={error} onRetry={reload}>
         <DataTable
+          title="productos"
           rowKey="id_producto"
           rows={data ?? []}
           emptyTitle="Sin productos"
@@ -56,7 +57,7 @@ export default function ProductsAdminPage() {
             {
               key: 'editar',
               header: '',
-              render: (r) => <Link className="btn btn--ghost btn--small" to={`/panel/productos/${r.id_producto}`}>Editar</Link>,
+              render: (r) => <Link className="button is-primary is-outlined is-small is-rounded" to={`/panel/productos/${r.id_producto}`}>Editar</Link>,
             },
           ]}
         />

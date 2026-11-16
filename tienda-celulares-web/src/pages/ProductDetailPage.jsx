@@ -2,14 +2,15 @@ import { Link, useParams } from 'react-router-dom';
 import PriceTag from '../components/products/PriceTag';
 import ProductImage from '../components/products/ProductImage';
 import ProductSpecs from '../components/products/ProductSpecs';
+import RelatedProducts from '../components/products/RelatedProducts';
 import StockBadge from '../components/products/StockBadge';
 import AsyncView from '../components/ui/AsyncView';
 import EmptyState from '../components/ui/EmptyState';
 import { site } from '../config/site';
+import { useCompare } from '../hooks/useCompare';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useProduct } from '../hooks/useProducts';
 import { buildWhatsAppLink } from '../utils/whatsapp';
-import styles from './ProductDetailPage.module.css';
 
 const warrantyText = (months) =>
   months > 0 ? `${months} ${months === 1 ? 'mes' : 'meses'} de garantía` : 'Sin garantía';
@@ -17,6 +18,7 @@ const warrantyText = (months) =>
 export default function ProductDetailPage() {
   const { id } = useParams();
   const { data: product, loading, error, reload } = useProduct(id);
+  const compare = useCompare();
 
   usePageTitle(product?.nombre);
 
@@ -24,7 +26,7 @@ export default function ProductDetailPage() {
     return (
       <div className="container">
         <EmptyState title="Producto no encontrado" message="Puede que ya no esté disponible.">
-          <Link to="/catalogo" className="btn btn--primary">
+          <Link to="/catalogo" className="button is-primary is-rounded">
             Volver al catálogo
           </Link>
         </EmptyState>
@@ -32,50 +34,75 @@ export default function ProductDetailPage() {
     );
   }
 
+  const chosen = product ? compare.has(product.id) : false;
+
   return (
     <div className="container">
-      <Link to="/catalogo" className={styles.back}>
-        ← Volver al catálogo
-      </Link>
+      <nav className="breadcrumb" aria-label="Ruta de navegación">
+        <ul>
+          <li>
+            <Link to="/">Inicio</Link>
+          </li>
+          <li>
+            <Link to="/catalogo">Catálogo</Link>
+          </li>
+          <li className="is-active">
+            <a href="#producto" aria-current="page" onClick={(event) => event.preventDefault()}>
+              {product?.nombre ?? 'Producto'}
+            </a>
+          </li>
+        </ul>
+      </nav>
 
       <AsyncView loading={loading} error={error} onRetry={reload}>
         {product && (
-          <div className={styles.layout}>
-            <div className={styles.image}>
-              <ProductImage product={product} />
-            </div>
+          <div id="producto">
+            <div className="columns is-variable is-6">
+              <div className="column is-6">
+                <div className="box p-2">
+                  <ProductImage product={product} />
+                </div>
+              </div>
 
-            <div className={styles.info}>
-              <span className={styles.brand}>{product.marca}</span>
-              <h1 className={styles.name}>{product.nombre}</h1>
-              {product.descripcion && <p className={styles.description}>{product.descripcion}</p>}
+              <div className="column is-6">
+                <p className="has-text-grey is-uppercase has-text-weight-semibold is-size-7">{product.marca}</p>
+                <h1 className="title is-2 mt-1">{product.nombre}</h1>
+                {product.descripcion && <p className="mb-4">{product.descripcion}</p>}
 
-              <PriceTag product={product} large />
+                <PriceTag product={product} large />
 
-              <ul className={styles.facts}>
-                <li>
+                <div className="tags mt-4">
                   <StockBadge available={product.disponible} />
-                </li>
-                <li>{warrantyText(product.garantiaMeses)}</li>
-                <li>Código: {product.codigo}</li>
-              </ul>
+                  <span className="tag is-info is-light is-rounded">{warrantyText(product.garantiaMeses)}</span>
+                  <span className="tag is-light is-rounded">Código: {product.codigo}</span>
+                </div>
 
-              <a
-                className="btn btn--primary"
-                href={buildWhatsAppLink(
-                  site.whatsapp,
-                  `Hola, me interesa ${product.nombre} (código ${product.codigo}). ¿Está disponible?`,
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Consultar por WhatsApp
-              </a>
+                <div className="buttons mt-5">
+                  <a
+                    className="button is-primary is-medium is-rounded"
+                    href={buildWhatsAppLink(
+                      site.whatsapp,
+                      `Hola, me interesa ${product.nombre} (código ${product.codigo}). ¿Está disponible?`,
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Consultar por WhatsApp
+                  </a>
+                  <button
+                    type="button"
+                    className="button is-primary is-outlined is-medium is-rounded"
+                    onClick={() => compare.toggle(product.id)}
+                    disabled={!chosen && compare.full}
+                  >
+                    {chosen ? '✓ En comparación' : 'Comparar'}
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div className={styles.specs}>
-              <ProductSpecs specs={product.specs} />
-            </div>
+            <ProductSpecs specs={product.specs} />
+            <RelatedProducts product={product} />
           </div>
         )}
       </AsyncView>

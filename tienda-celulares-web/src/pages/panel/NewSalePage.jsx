@@ -70,8 +70,8 @@ export default function NewSalePage() {
         </p>
         <strong className={styles.doneTotal}>{formatBs(Number(done.total))}</strong>
         <div className={styles.doneActions}>
-          <button type="button" className="btn btn--primary" onClick={startOver}>Nueva venta</button>
-          <Link className="btn btn--ghost" to="/panel/ventas">Ver ventas</Link>
+          <button type="button" className="button is-primary is-rounded" onClick={startOver}>Nueva venta</button>
+          <Link className="button is-primary is-outlined is-rounded" to="/panel/ventas">Ver ventas</Link>
         </div>
       </div>
     );
@@ -122,7 +122,7 @@ export default function NewSalePage() {
             </p>
             <p className={styles.hint}>Las promociones vigentes se aplican solas al confirmar; el total final lo calcula el sistema.</p>
             {failure && <p className={styles.error} role="alert">{failure}</p>}
-            <button type="button" className="btn btn--primary" disabled={!canSubmit} onClick={submit}>
+            <button type="button" className="button is-primary is-rounded" disabled={!canSubmit} onClick={submit}>
               {busy ? 'Registrando…' : 'Confirmar venta'}
             </button>
             {!canSubmit && !busy && (

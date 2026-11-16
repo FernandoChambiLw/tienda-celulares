@@ -34,7 +34,7 @@ export default function SalesPage() {
       key: 'ver',
       header: '',
       render: (r) => (
-        <button type="button" className="btn btn--ghost btn--small" onClick={() => setOpenId(r.id_venta)}>Ver</button>
+        <button type="button" className="button is-primary is-outlined is-small is-rounded" onClick={() => setOpenId(r.id_venta)}>Ver</button>
       ),
     },
   ];
@@ -51,10 +51,10 @@ export default function SalesPage() {
           <option>Anulada</option>
         </select>
         <span className={styles.spacer} />
-        <Link className="btn btn--primary" to="/panel/ventas/nueva">Nueva venta</Link>
+        <Link className="button is-primary is-rounded" to="/panel/ventas/nueva">Nueva venta</Link>
       </div>
       <AsyncView loading={loading} error={error} onRetry={reload}>
-        <DataTable rowKey="id_venta" rows={data ?? []} columns={columns} emptyTitle="Sin ventas" emptyMessage="No hay ventas con estos filtros." />
+        <DataTable title="ventas" rowKey="id_venta" rows={data ?? []} columns={columns} emptyTitle="Sin ventas" emptyMessage="No hay ventas con estos filtros." />
       </AsyncView>
       {openId && <SaleDetailDialog saleId={openId} onClose={() => setOpenId(null)} onChanged={reload} />}
     </>

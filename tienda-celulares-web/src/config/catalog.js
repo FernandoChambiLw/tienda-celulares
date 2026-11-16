@@ -14,5 +14,7 @@ export const SORT_OPTIONS = [
 export const DEFAULT_SORT = 'nombre';
 
 // Máximo de productos que pide el catálogo a la API (su tope es 200).
-// Si la tienda crece más allá de esto, hay que agregar paginación.
+// La web los reparte en páginas de PAGE_SIZE; si la tienda supera los 200 productos
+// habrá que paginar también en la API (parámetros limit y offset).
 export const CATALOG_LIMIT = 200;
+export const PAGE_SIZE = 12;

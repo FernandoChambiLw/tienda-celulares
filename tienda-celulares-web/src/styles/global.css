@@ -1,167 +1,132 @@
-/* ---------- Tokens de diseño ----------
-   Paleta verde (escala 50-950) + crema cálido + terracota para ofertas.
-   Los nombres antiguos (--brand, --ink, --line...) se mantienen como alias,
-   así los componentes no necesitan saber qué color exacto usan. */
+/* ---------- Identidad FX TECHNOLOGY ----------
+   Negro del logo + azul eléctrico + blanco. La base visual la pone Bulma;
+   aquí solo se ajustan sus variables y se definen los tokens propios.
+   Los nombres antiguos (--brand, --ink, --line...) se mantienen como alias
+   para que los componentes no necesiten saber qué color exacto usan. */
 :root {
-  --green-50: #e8fcf6;
-  --green-100: #c0f7e5;
-  --green-200: #97f2d5;
-  --green-300: #6fecc4;
-  --green-400: #46e7b4;
-  --green-500: #1ddea1;
-  --green-600: #18b986;
-  --green-700: #139069;
-  --green-800: #0d684b;
-  --green-900: #083f2e;
-  --green-950: #031710;
+  --blue-50: #eaf4ff;
+  --blue-100: #cfe6ff;
+  --blue-200: #a6d1ff;
+  --blue-300: #70b5ff;
+  --blue-400: #3d9bff;
+  --blue-500: #0a84ff;
+  --blue-600: #0a6fdb;
+  --blue-700: #0a5ab3;
+  --blue-800: #0b4a94;
+  --blue-900: #082f61;
+  --blue-950: #04101f;
 
-  --cream: #fbf7ef;
-  --sand: #f3ebdc;
-  --amber-100: #fcebc8;
-  --amber-500: #f2a93b;
-  --clay: #c8541f;
+  --paper: #ffffff;
+  --sand: #e9eff7;
+  --amber-100: #ffe6d3;
+  --amber-500: #ff8a3d;
+  --clay: #e8590c;
 
-  --bg: var(--cream);
-  --surface: #fffdf8;
-  --ink: var(--green-950);
-  --muted: #52665c;
-  --line: #e6ddcb;
-  --brand: var(--green-800);
-  --brand-dark: var(--green-900);
-  --brand-soft: var(--green-100);
+  --bg: #f4f7fb;
+  --surface: #ffffff;
+  --ink: #0b1220;
+  --muted: #566274;
+  --line: #dbe3ee;
+  --brand: var(--blue-700);
+  --brand-dark: var(--blue-900);
+  --brand-soft: var(--blue-100);
   --accent: var(--clay);
-  --ok: var(--green-800);
+  --ok: #0f7a4a;
   --warn: #8a5200;
   --danger: #b42318;
 
-  --radius: 20px;
-  --radius-lg: 28px;
-  --shadow: 0 1px 2px rgba(3, 23, 16, 0.06), 0 14px 30px -14px rgba(3, 23, 16, 0.22);
+  --radius: 16px;
+  --radius-lg: 24px;
+  --shadow: 0 1px 2px rgba(4, 16, 31, 0.06), 0 14px 30px -14px rgba(4, 16, 31, 0.25);
 
   --font-display: 'Bricolage Grotesque Variable', 'Figtree Variable', system-ui, sans-serif;
   --font: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-}
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+  /* Variables de Bulma 1.x: así sus botones, enlaces y etiquetas usan nuestro azul. */
+  --bulma-primary-h: 211deg;
+  --bulma-primary-s: 90%;
+  --bulma-primary-l: 36%;
+  --bulma-primary-invert-l: 100%;
+  --bulma-link-h: 211deg;
+  --bulma-link-s: 90%;
+  --bulma-link-l: 36%;
+  --bulma-link-invert-l: 100%;
+  --bulma-info-h: 205deg;
+  --bulma-success-h: 152deg;
+  --bulma-danger-h: 4deg;
+  --bulma-family-primary: var(--font);
+  --bulma-body-background-color: var(--bg);
+  --bulma-body-color: var(--ink);
+  --bulma-text: var(--ink);
+  --bulma-text-strong: var(--ink);
+  --bulma-title-color: var(--ink);
+  --bulma-subtitle-color: var(--muted);
+  --bulma-radius: 12px;
+  --bulma-radius-large: 20px;
+  --bulma-radius-rounded: 999px;
+  --bulma-body-size: 1rem;
 }
 
 body {
-  margin: 0;
   font-family: var(--font);
-  font-size: 1rem;
   background: var(--bg);
   color: var(--ink);
-  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
 img,
 svg {
-  display: block;
   max-width: 100%;
-}
-
-a {
-  color: inherit;
 }
 
 h1,
 h2,
 h3,
-p {
-  margin: 0;
-}
-
-h1,
-h2,
-h3 {
+h4,
+.title {
   font-family: var(--font-display);
   font-weight: 700;
-  line-height: 1.1;
   letter-spacing: -0.02em;
 }
 
-ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* ---------- Utilidades compartidas ---------- */
-
+/* Bulma limita .container con max-width por pantalla; aquí se prefiere un ancho fluido con margen lateral. */
 .container {
   width: min(1160px, 100% - 32px);
+  max-width: none;
   margin-inline: auto;
+  padding-inline: 0;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 13px 24px;
-  border: 1.5px solid transparent;
-  border-radius: 999px;
-  font: inherit;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-}
-
-.btn--primary {
-  background: var(--green-800);
-  color: var(--cream);
-}
-
-.btn--primary:hover {
-  background: var(--green-900);
-}
-
-.btn--ghost {
-  background: transparent;
-  border-color: var(--green-950);
-  color: var(--green-950);
-}
-
-.btn--ghost:hover {
-  background: var(--green-950);
-  color: var(--cream);
-}
-
-.btn--cream {
-  background: var(--cream);
-  color: var(--green-950);
-}
-
-.btn--cream:hover {
-  background: var(--green-200);
-}
-
-.btn--small {
-  padding: 9px 18px;
-  font-size: 0.92rem;
+.navbar > .container {
+  width: min(1160px, 100% - 32px);
 }
 
 .eyebrow {
   display: inline-block;
   padding: 5px 14px;
   border-radius: 999px;
-  background: var(--green-100);
-  color: var(--green-900);
+  background: rgba(10, 132, 255, 0.16);
+  color: var(--blue-300);
   font-size: 0.85rem;
   font-weight: 700;
 }
 
+.button {
+  font-weight: 700;
+  transition: transform 0.18s, background-color 0.18s, border-color 0.18s;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.card {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
 :focus-visible {
-  outline: 3px solid var(--green-400);
+  outline: 3px solid var(--blue-400);
   outline-offset: 3px;
 }
 
@@ -173,4 +138,20 @@ ul {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* Al imprimir (o "Guardar como PDF") se ocultan menús y botones. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+}
+
+/* El icono del menú móvil debe verse sobre el fondo negro. */
+.navbar-burger {
+  color: #fff;
 }

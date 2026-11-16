@@ -1,21 +1,26 @@
-import styles from './ProductSpecs.module.css';
-
+// Tabla de especificaciones con las clases `table` de Bulma.
 export default function ProductSpecs({ specs }) {
   if (specs.length === 0) return null;
 
   return (
     <section aria-labelledby="specs-title">
-      <h2 id="specs-title" className={styles.title}>
+      <h2 id="specs-title" className="title is-5">
         Especificaciones
       </h2>
-      <dl className={styles.list}>
-        {specs.map(({ label, value }) => (
-          <div key={label} className={styles.row}>
-            <dt className={styles.label}>{label}</dt>
-            <dd className={styles.value}>{value}</dd>
-          </div>
-        ))}
-      </dl>
+      <div className="table-container">
+        <table className="table is-fullwidth is-striped">
+          <tbody>
+            {specs.map(({ label, value }) => (
+              <tr key={label}>
+                <th scope="row" className="has-text-grey has-text-weight-normal" style={{ width: '35%' }}>
+                  {label}
+                </th>
+                <td>{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

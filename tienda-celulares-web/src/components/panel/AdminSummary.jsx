@@ -1,6 +1,7 @@
 import { reportsApi } from '../../api/panel/panelApi';
 import { useAsync } from '../../hooks/useAsync';
 import { formatBs } from '../../utils/format';
+import { formatDayMonth, formatMonth } from '../../utils/panelFormat';
 import AsyncView from '../ui/AsyncView';
 import DataTable from './DataTable';
 import SalesBars from './SalesBars';
@@ -25,9 +26,24 @@ export default function AdminSummary() {
           <section>
             <h2 className={styles.h2}>Últimos 7 días</h2>
             {data.ventas_ultimos_7_dias.length ? (
-              <SalesBars days={data.ventas_ultimos_7_dias} />
+              <SalesBars
+                ariaLabel="Ventas de los últimos 7 días"
+                items={data.ventas_ultimos_7_dias.map((d) => ({ key: d.dia, label: formatDayMonth(d.dia), total: d.total }))}
+              />
             ) : (
               <p className={styles.muted}>Todavía no hay ventas esta semana.</p>
+            )}
+          </section>
+
+          <section>
+            <h2 className={styles.h2}>Últimos 6 meses</h2>
+            {data.ventas_ultimos_6_meses?.length ? (
+              <SalesBars
+                ariaLabel="Ventas de los últimos 6 meses"
+                items={data.ventas_ultimos_6_meses.map((m) => ({ key: m.mes, label: formatMonth(m.mes), total: m.total }))}
+              />
+            ) : (
+              <p className={styles.muted}>Todavía no hay ventas en los últimos meses.</p>
             )}
           </section>
 
@@ -35,6 +51,7 @@ export default function AdminSummary() {
             <section>
               <h2 className={styles.h2}>Más vendidos (30 días)</h2>
               <DataTable
+                compact
                 rowKey="id_producto"
                 rows={data.top_productos_30d}
                 emptyTitle="Sin ventas"
@@ -48,6 +65,7 @@ export default function AdminSummary() {
             <section>
               <h2 className={styles.h2}>Reparaciones por estado</h2>
               <DataTable
+                compact
                 rowKey="estado"
                 rows={data.reparaciones_por_estado}
                 emptyTitle="Sin reparaciones"

@@ -58,3 +58,16 @@ Abre el servicio en Render → pestaña **Logs**.
 - `[init-db] ERROR` → problema al crear las tablas; copia el mensaje completo.
 - `Define JWT_SECRET` → falta la variable `JWT_SECRET`.
 - La web carga pero sin productos ni login → `VITE_USE_MOCK` no está en `false` (hay que volver a desplegar, porque se aplica al compilar).
+
+---
+
+## Actualizar el sitio después de un cambio
+Cuando cambies algo (por ejemplo la dirección o el horario en `tienda-celulares-web/src/config/site.js`), desde la carpeta del proyecto:
+
+```
+git add .
+git commit -m "Describe el cambio"
+git push
+```
+
+Render detecta el push y vuelve a publicar solo (tarda unos minutos). La base de datos no se toca.

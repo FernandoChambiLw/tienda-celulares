@@ -2,13 +2,12 @@ import PageHeader from '../components/ui/PageHeader';
 import { site } from '../config/site';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { buildWhatsAppLink } from '../utils/whatsapp';
-import styles from './ContactPage.module.css';
 
 const CONTACT_ITEMS = [
   { label: 'Dirección', value: site.address },
   { label: 'Horario de atención', value: site.schedule },
-  { label: 'Teléfono', value: site.phone },
-  { label: 'Correo', value: site.email },
+  { label: 'WhatsApp y teléfono', value: site.phone },
+  ...(site.email ? [{ label: 'Correo', value: site.email }] : []),
 ];
 
 export default function ContactPage() {
@@ -18,17 +17,19 @@ export default function ContactPage() {
     <div className="container">
       <PageHeader title="Contacto" subtitle="Visítanos o escríbenos, te respondemos pronto." />
 
-      <ul className={styles.grid}>
+      <div className="columns is-multiline">
         {CONTACT_ITEMS.map(({ label, value }) => (
-          <li key={label} className={styles.item}>
-            <span className={styles.label}>{label}</span>
-            <span className={styles.value}>{value}</span>
-          </li>
+          <div key={label} className="column is-6">
+            <div className="box">
+              <p className="has-text-grey is-size-7 has-text-weight-semibold">{label}</p>
+              <p className="is-size-5 has-text-weight-semibold">{value}</p>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
 
       <a
-        className="btn btn--primary"
+        className="button is-primary is-medium is-rounded"
         href={buildWhatsAppLink(site.whatsapp, 'Hola, quisiera hacer una consulta.')}
         target="_blank"
         rel="noopener noreferrer"

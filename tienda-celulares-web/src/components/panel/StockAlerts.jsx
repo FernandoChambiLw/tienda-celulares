@@ -9,6 +9,8 @@ export default function StockAlerts() {
   return (
     <AsyncView loading={loading} error={error} onRetry={reload}>
       <DataTable
+        compact
+        title="stock-por-reponer"
         rowKey="key"
         rows={(data ?? []).map((r) => ({ ...r, key: `${r.id_almacen}-${r.id_producto}` }))}
         emptyTitle="Todo el stock está en orden"

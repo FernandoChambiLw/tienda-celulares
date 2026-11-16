@@ -14,3 +14,10 @@ export const saleTone = (estado) => SALE_TONE[estado] ?? 'neutral';
 const REPAIR_TONE = { Recibido: 'neutral', Diagnostico: 'warn', 'En reparacion': 'warn', Listo: 'ok', Entregado: 'ok', Cancelado: 'danger' };
 export const repairTone = (estado) => REPAIR_TONE[estado] ?? 'neutral';
 export const REPAIR_STATES = ['Recibido', 'Diagnostico', 'En reparacion', 'Listo', 'Entregado', 'Cancelado'];
+
+// 'YYYY-MM' -> 'nov 2026'
+const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+export const formatMonth = (ym) => {
+  const [year, month] = ym.split('-');
+  return `${MONTHS[Number(month) - 1]} ${year}`;
+};

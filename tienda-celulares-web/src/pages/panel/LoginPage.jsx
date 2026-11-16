@@ -34,29 +34,34 @@ export default function LoginPage() {
 
   return (
     <div className={styles.page}>
-      <form className={styles.card} onSubmit={submit}>
-        <h1 className={styles.title}>{site.name}</h1>
-        <p className={styles.subtitle}>Panel interno para el personal</p>
+      <form className={`box ${styles.card}`} onSubmit={submit}>
+        <img src="/logo-192.png" alt="" width="64" height="64" className={styles.logo} />
+        <h1 className="title is-4 has-text-centered mb-1">{site.name}</h1>
+        <p className="subtitle is-6 has-text-centered mb-5">Panel interno para el personal</p>
 
         {env.useMock && (
-          <p className={styles.notice}>
+          <p className="notification is-warning is-light">
             La web está en modo de datos de ejemplo. Para entrar al panel pon
             <code> VITE_USE_MOCK=false </code> en <code>.env</code> y enciende la API.
           </p>
         )}
 
-        <label className={styles.field}>
-          Usuario
-          <input value={form.username} onChange={update('username')} autoComplete="username" required autoFocus />
-        </label>
-        <label className={styles.field}>
-          Contraseña
-          <input type="password" value={form.password} onChange={update('password')} autoComplete="current-password" required />
-        </label>
+        <div className="field">
+          <label className="label" htmlFor="login-user">Usuario</label>
+          <div className="control">
+            <input id="login-user" className="input" value={form.username} onChange={update('username')} autoComplete="username" required autoFocus />
+          </div>
+        </div>
+        <div className="field">
+          <label className="label" htmlFor="login-pass">Contraseña</label>
+          <div className="control">
+            <input id="login-pass" className="input" type="password" value={form.password} onChange={update('password')} autoComplete="current-password" required />
+          </div>
+        </div>
 
-        {error && <p className={styles.error} role="alert">{error}</p>}
+        {error && <p className="notification is-danger is-light" role="alert">{error}</p>}
 
-        <button type="submit" className="btn btn--primary" disabled={busy || env.useMock}>
+        <button type="submit" className={`button is-primary is-rounded is-fullwidth ${busy ? 'is-loading' : ''}`} disabled={busy || env.useMock}>
           {busy ? 'Ingresando…' : 'Ingresar'}
         </button>
         <Link to="/" className={styles.back}>← Volver a la tienda</Link>

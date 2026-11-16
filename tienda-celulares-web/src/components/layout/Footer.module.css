@@ -1,43 +1,40 @@
 .footer {
-  padding: 56px 0 24px;
-  background: var(--green-950);
-  color: var(--cream);
-}
-
-.grid {
-  display: grid;
-  gap: 32px;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  background: #000;
+  color: #b7c3d4;
+  padding-block: 48px 24px;
 }
 
 .slogan {
-  max-width: 30ch;
-  margin-top: 14px;
-  color: #a9c2b8;
+  margin-top: 12px;
+  max-width: 34ch;
 }
 
 .heading {
   margin-bottom: 8px;
+  color: #fff;
   font-family: var(--font-display);
-  font-size: 1.05rem;
   font-weight: 700;
 }
 
 .text {
-  color: #a9c2b8;
+  margin: 0;
 }
 
 .link {
   display: inline-block;
   margin-top: 8px;
-  color: var(--green-300);
+  color: var(--blue-300);
   font-weight: 600;
 }
 
+.link:hover {
+  color: #fff;
+}
+
 .copy {
-  margin-top: 40px;
+  margin-top: 28px;
   padding-top: 18px;
-  border-top: 1px solid #14352a;
-  color: #6f8c80;
-  font-size: 0.85rem;
+  border-top: 1px solid #1c2636;
+  color: #7d8aa0;
+  font-size: 0.9rem;
 }

@@ -1,8 +1,8 @@
 // Ilustraciones SVG de producto: reemplazan a la foto mientras no exista una.
 // Cada una pesa unos cientos de bytes y toma el color real del producto.
 const SHADE = 'rgba(3, 23, 16, 0.28)';
-const LENS = '#0b130f';
-const LENS_RING = '#2c3a33';
+const LENS = '#0a0f18';
+const LENS_RING = '#2a3546';
 
 function Phone({ color }) {
   return (
@@ -60,7 +60,7 @@ function Case({ color }) {
   return (
     <>
       <rect x="62" y="20" width="76" height="160" rx="19" fill={color} />
-      <rect x="70" y="28" width="36" height="40" rx="12" fill="#fbf7ef" opacity="0.9" />
+      <rect x="70" y="28" width="36" height="40" rx="12" fill="#ffffff" opacity="0.9" />
       <circle cx="82" cy="40" r="7" fill={LENS} />
       <circle cx="82" cy="40" r="3" fill={LENS_RING} />
       <circle cx="95" cy="56" r="6" fill={LENS} />
@@ -72,7 +72,7 @@ function Case({ color }) {
 function Glass({ color }) {
   return (
     <>
-      <rect x="64" y="22" width="72" height="156" rx="13" fill="#cdefe4" opacity="0.75" stroke={color} strokeWidth="3" />
+      <rect x="64" y="22" width="72" height="156" rx="13" fill="#d6e8ff" opacity="0.75" stroke={color} strokeWidth="3" />
       <path d="M76 152 126 62M76 172 126 82" stroke="#fff" strokeWidth="8" strokeLinecap="round" opacity="0.7" />
       <rect x="90" y="31" width="20" height="5" rx="2.5" fill={color} />
     </>
@@ -84,8 +84,8 @@ function Band({ color }) {
     <>
       <rect x="86" y="8" width="28" height="184" rx="12" fill={color} />
       <rect x="66" y="62" width="68" height="82" rx="22" fill={LENS} />
-      <rect x="73" y="69" width="54" height="68" rx="16" fill="#1d3a2d" />
-      <path d="M86 96h28" stroke="#6fecc4" strokeWidth="5" strokeLinecap="round" />
+      <rect x="73" y="69" width="54" height="68" rx="16" fill="#14243d" />
+      <path d="M86 96h28" stroke="#70b5ff" strokeWidth="5" strokeLinecap="round" />
       <circle cx="100" cy="116" r="5" fill="#f2a93b" />
     </>
   );
@@ -115,7 +115,7 @@ export default function Illustration({ kind, color, className }) {
   const Shape = SHAPES[kind] ?? Box;
   return (
     <svg className={className} viewBox="0 0 200 200" fill="none" aria-hidden="true" focusable="false">
-      <ellipse cx="100" cy="186" rx="44" ry="6" fill="#031710" opacity="0.1" />
+      <ellipse cx="100" cy="186" rx="44" ry="6" fill="#04101f" opacity="0.1" />
       {/* Borde sutil heredado por todas las formas: los productos claros no se pierden en el fondo. */}
       <g stroke="rgba(3, 23, 16, 0.2)" strokeWidth="1.5">
         <Shape color={color} />

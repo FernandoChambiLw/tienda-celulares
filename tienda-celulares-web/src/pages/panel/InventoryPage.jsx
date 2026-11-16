@@ -33,6 +33,7 @@ export default function InventoryPage() {
       </div>
       <AsyncView loading={loading} error={error} onRetry={reload}>
         <DataTable
+          title="inventario"
           rowKey="key"
           rows={rows}
           emptyTitle="Sin resultados"

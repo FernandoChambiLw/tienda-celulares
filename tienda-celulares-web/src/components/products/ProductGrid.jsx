@@ -1,7 +1,7 @@
 import EmptyState from '../ui/EmptyState';
 import ProductCard from './ProductCard';
-import styles from './ProductGrid.module.css';
 
+// Cuadrícula con las `columns` de Bulma: 1 columna en celular, 2 en tablet, 3-4 en escritorio.
 export default function ProductGrid({ products }) {
   if (products.length === 0) {
     return (
@@ -13,12 +13,12 @@ export default function ProductGrid({ products }) {
   }
 
   return (
-    <ul className={styles.grid}>
+    <div className="columns is-multiline is-variable is-3">
       {products.map((product) => (
-        <li key={product.id}>
+        <div key={product.id} className="column is-12-mobile is-6-tablet is-4-desktop is-3-widescreen">
           <ProductCard product={product} />
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }

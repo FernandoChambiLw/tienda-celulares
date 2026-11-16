@@ -64,11 +64,11 @@ export default function SaleDetailDialog({ saleId, onClose, onChanged }) {
             {failure && <p className={styles.error} role="alert">{failure}</p>}
             <footer className={styles.actions}>
               {user.rol === ROLES.admin && sale.estado === 'Completada' && (
-                <button type="button" className="btn btn--ghost btn--small" onClick={cancelSale} disabled={busy}>
+                <button type="button" className="button is-primary is-outlined is-small is-rounded" onClick={cancelSale} disabled={busy}>
                   Anular venta
                 </button>
               )}
-              <button type="button" className="btn btn--primary btn--small" onClick={() => ref.current.close()}>
+              <button type="button" className="button is-primary is-small is-rounded" onClick={() => ref.current.close()}>
                 Cerrar
               </button>
             </footer>
