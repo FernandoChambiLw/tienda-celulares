@@ -3,13 +3,35 @@ import { request } from '../httpClient';
 // Recursos del panel interno. Todos exigen sesión; la API decide qué rol puede qué.
 export const reportsApi = {
   summary: () => request('/reportes/resumen'),
+  sales: (params) => request('/reportes/ventas', { params }),
+  restock: () => request('/reportes/reposicion'),
+};
+
+export const cashApi = {
+  current: () => request('/caja/actual'),
+  list: (params) => request('/caja', { params }),
+  get: (id) => request(`/caja/${id}`),
+  open: (monto_inicial) => request('/caja/abrir', { method: 'POST', body: { monto_inicial } }),
+  move: (body) => request('/caja/movimiento', { method: 'POST', body }),
+  close: (body) => request('/caja/cerrar', { method: 'POST', body }),
+};
+
+export const accountsApi = {
+  list: (params) => request('/cuentas', { params }),
+  summary: () => request('/cuentas/resumen'),
+  get: (id) => request(`/cuentas/${id}`),
+  pay: (id, body) => request(`/cuentas/${id}/abonos`, { method: 'POST', body }),
+};
+
+export const auditApi = {
+  list: (params) => request('/bitacora', { params }),
 };
 
 export const salesApi = {
   list: (params) => request('/ventas', { params }),
   get: (id) => request(`/ventas/${id}`),
   create: (body) => request('/ventas', { method: 'POST', body }),
-  cancel: (id) => request(`/ventas/${id}/anular`, { method: 'PATCH' }),
+  cancel: (id, motivo) => request(`/ventas/${id}/anular`, { method: 'PATCH', body: { motivo } }),
 };
 
 export const inventoryApi = {

@@ -5,6 +5,7 @@ import { q, tx } from '../db.js';
 import { ah, required, pick, notFound, toInt, bad, insertSql, updateSql, pageParams } from '../utils.js';
 import { requireRole } from '../auth.js';
 import { UPLOADS_DIR } from '../config.js';
+import { audit } from '../bitacora.js';
 
 const router = Router();
 
@@ -93,10 +94,13 @@ router.post('/', requireRole('Almacenero'), ah(async (req, res) => {
 router.put('/:id', requireRole('Almacenero'), ah(async (req, res) => {
   const id = toInt(req.params.id, 'id');
   await tx(async (c) => {
-    const cur = await q('SELECT tipo_producto FROM producto WHERE id_producto = $1', [id], c);
+    const cur = await q('SELECT tipo_producto, precio_venta, precio_compra FROM producto WHERE id_producto = $1', [id], c);
     if (!cur.rows[0]) throw notFound('Producto no encontrado');
     const tipo = TIPOS[cur.rows[0].tipo_producto];
     const data = pick(req.body, PRODUCTO);
+    for (const f of ['precio_venta', 'precio_compra'])
+      if (data[f] !== undefined && Number(data[f]) !== cur.rows[0][f])
+        await audit(req, 'Cambio de precio', 'producto', id, `${f}: ${cur.rows[0][f]} → ${Number(data[f])}`, c);
     if (Object.keys(data).length) { const s = updateSql('producto', 'id_producto', id, data); await q(s.text, s.values, c); }
     const det = pick(req.body.detalle, tipo.campos);
     if (Object.keys(det).length) { const s = updateSql(tipo.tabla, 'id_producto', id, det); await q(s.text, s.values, c); }

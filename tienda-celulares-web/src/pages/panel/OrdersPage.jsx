@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ordersApi } from '../../api/panel/panelApi';
 import DataTable from '../../components/panel/DataTable';
 import Pill from '../../components/panel/Pill';
@@ -18,6 +19,7 @@ const ACTION_LABEL = { Confirmado: 'Confirmar pedido', Entregado: 'Marcar entreg
 // Detalle de un pedido con los botones para avanzar su estado.
 function OrderDetail({ id, onClose, onChanged }) {
   const { data: order, loading, error, reload } = useAsync(() => ordersApi.get(id), [id]);
+  const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState('');
 
@@ -78,6 +80,11 @@ function OrderDetail({ id, onClose, onChanged }) {
               {ACTION_LABEL[estado]}
             </button>
           ))}
+          {order && ['Nuevo', 'Confirmado'].includes(order.estado) && (
+            <button type="button" className="button is-rounded is-link" onClick={() => navigate('/panel/ventas/nueva', { state: { order } })}>
+              Registrar venta
+            </button>
+          )}
           {order && (
             <a
               className="button is-rounded is-light"

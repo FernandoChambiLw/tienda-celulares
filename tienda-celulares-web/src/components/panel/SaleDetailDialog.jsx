@@ -24,10 +24,12 @@ export default function SaleDetailDialog({ saleId, onClose, onChanged }) {
 
   const cancelSale = async () => {
     if (!window.confirm('¿Anular esta venta? El stock y los IMEI vuelven al almacén.')) return;
+    const motivo = window.prompt('Motivo de la anulación (queda en la bitácora):', '');
+    if (motivo === null) return;
     setBusy(true);
     setFailure('');
     try {
-      await salesApi.cancel(saleId);
+      await salesApi.cancel(saleId, motivo.trim());
       onChanged();
       reload();
     } catch (e) {

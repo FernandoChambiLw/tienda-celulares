@@ -175,6 +175,72 @@ check('resumen trae ventas por mes', Array.isArray(res.body.ventas_ultimos_6_mes
 check('resumen solo admin', (await api('GET', '/api/reportes/resumen', { token: lucia })).status === 403);
 check('usuarios solo admin', (await api('GET', '/api/usuarios', { token: lucia })).status === 403);
 
+console.log('Fase 2: caja, crédito, reportes y bitácora');
+const acc = (await pool.query("SELECT p.id_producto, p.precio_venta FROM celulares.producto p JOIN celulares.inventario i USING (id_producto) WHERE p.tipo_producto = 'Accesorio' AND p.estado = 'Activo' AND i.stock_actual >= 6 LIMIT 1")).rows[0];
+check('hay un accesorio para probar', !!acc, acc);
+check('caja: sin abrir no hay actual', (await api('GET', '/api/caja/actual', { token: lucia })).body === null);
+check('caja: no se mueve sin abrir → 400', (await api('POST', '/api/caja/movimiento', { token: lucia, body: { tipo: 'Egreso', monto: 5, concepto: 'x' } })).status === 400);
+check('caja: técnico no abre → 403', (await api('POST', '/api/caja/abrir', { token: marco, body: { monto_inicial: 100 } })).status === 403);
+check('caja: monto negativo → 400', (await api('POST', '/api/caja/abrir', { token: lucia, body: { monto_inicial: -1 } })).status === 400);
+const aper = await api('POST', '/api/caja/abrir', { token: lucia, body: { monto_inicial: 100 } });
+check('caja: abre', aper.status === 201 && aper.body.estado === 'Abierta', aper.body);
+check('caja: no abre dos → 400', (await api('POST', '/api/caja/abrir', { token: lucia, body: { monto_inicial: 5 } })).status === 400);
+
+const vE = await api('POST', '/api/ventas', { token: lucia, body: { id_cliente: 1, id_metodo_pago: 1, items: [{ id_producto: acc.id_producto, cantidad: 2 }] } });
+check('venta al contado en efectivo', vE.status === 201, vE.body);
+const vQ = await api('POST', '/api/ventas', { token: lucia, body: { id_cliente: 1, id_metodo_pago: 3, items: [{ id_producto: acc.id_producto, cantidad: 1 }] } });
+check('venta por QR', vQ.status === 201, vQ.body);
+const unit = Number(acc.precio_venta);
+const vC = await api('POST', '/api/ventas', { token: lucia, body: { id_cliente: 1, id_metodo_pago: 1, credito: { adelanto: unit / 2, vence: '2030-01-01' }, items: [{ id_producto: acc.id_producto, cantidad: 2 }] } });
+check('venta a crédito con adelanto', vC.status === 201 && Math.abs(vC.body.saldo_credito - (2 * unit - unit / 2)) < 0.01, vC.body);
+check('adelanto mayor al total → 400', (await api('POST', '/api/ventas', { token: lucia, body: { id_cliente: 1, id_metodo_pago: 1, credito: { adelanto: 999999 }, items: [{ id_producto: acc.id_producto, cantidad: 1 }] } })).status === 400);
+const egr = await api('POST', '/api/caja/movimiento', { token: lucia, body: { tipo: 'Egreso', monto: 10, concepto: 'Pasajes' } });
+check('egreso de caja', egr.status === 201, egr.body);
+
+const cuentas = await api('GET', '/api/cuentas', { token: lucia });
+const cta = cuentas.body.find((x) => x.id_venta === vC.body.id_venta);
+check('cuenta por cobrar listada', !!cta && cta.estado === 'Pendiente', cuentas.body);
+check('abono mayor al saldo → 400', (await api('POST', `/api/cuentas/${cta.id_cuenta}/abonos`, { token: lucia, body: { monto: 99999, id_metodo_pago: 1 } })).status === 400);
+const ab1 = await api('POST', `/api/cuentas/${cta.id_cuenta}/abonos`, { token: lucia, body: { monto: unit / 2, id_metodo_pago: 1 } });
+check('abono parcial baja el saldo', ab1.status === 201 && Math.abs(ab1.body.saldo - unit) < 0.01, ab1.body);
+check('resumen por cobrar', (await api('GET', '/api/cuentas/resumen', { token: lucia })).body.por_cobrar >= unit);
+check('técnico no ve cuentas → 403', (await api('GET', '/api/cuentas', { token: marco })).status === 403);
+
+const act = (await api('GET', '/api/caja/actual', { token: lucia })).body;
+// efectivo = 100 inicial + 2*unit (contado) + unit/2 (adelanto) + unit/2 (abono) - 10 egreso
+const esperadoCaja = Math.round((100 + 2 * unit + unit / 2 + unit / 2 - 10) * 100) / 100;
+check('caja: efectivo esperadoCaja correcto', Math.abs(act.esperado_calculado - esperadoCaja) < 0.01, { esperadoCaja, got: act.esperado_calculado });
+check('caja: QR separado del efectivo', act.cobros.find((x) => x.metodo === 'Transferencia QR')?.total === unit, act.cobros);
+const cierre = await api('POST', '/api/caja/cerrar', { token: lucia, body: { monto_contado: esperadoCaja - 5, observacion: 'faltan 5' } });
+check('caja: cierra con diferencia -5', cierre.status === 200 && cierre.body.estado === 'Cerrada' && Math.abs(cierre.body.diferencia + 5) < 0.01, cierre.body);
+check('caja: no cierra dos veces → 400', (await api('POST', '/api/caja/cerrar', { token: lucia, body: { monto_contado: 1 } })).status === 400);
+check('caja: historial propio', (await api('GET', '/api/caja', { token: lucia })).body.length === 1);
+
+// pagar el resto → Pagada
+const ab2 = await api('POST', `/api/cuentas/${cta.id_cuenta}/abonos`, { token: lucia, body: { monto: unit, id_metodo_pago: 3 } });
+check('cuenta saldada pasa a Pagada', ab2.body.estado === 'Pagada' && ab2.body.saldo === 0, ab2.body);
+check('no se abona a cuenta pagada → 400', (await api('POST', `/api/cuentas/${cta.id_cuenta}/abonos`, { token: lucia, body: { monto: 1, id_metodo_pago: 1 } })).status === 400);
+
+const rv = await api('GET', '/api/reportes/ventas', { token: admin });
+check('reporte de ventas con utilidad', rv.status === 200 && rv.body.total > 0 && typeof rv.body.utilidad === 'number' && rv.body.por_vendedor.length > 0 && rv.body.por_marca.length > 0, rv.body);
+check('reporte con rango futuro vacío', (await api('GET', '/api/reportes/ventas?desde=2099-01-01&hasta=2099-12-31', { token: admin })).body.ventas === 0);
+check('reporte de ventas solo admin', (await api('GET', '/api/reportes/ventas', { token: lucia })).status === 403);
+const repo = await api('GET', '/api/reportes/reposicion', { token: rosa });
+check('reposición sugerida', repo.status === 200 && Array.isArray(repo.body), repo.body);
+
+const price = await api('PUT', `/api/productos/${acc.id_producto}`, { token: rosa, body: { precio_venta: unit + 1 } });
+check('cambio de precio', price.status === 200, price.body);
+const vAn = await api('PATCH', `/api/ventas/${vC.body.id_venta}/anular`, { token: admin, body: { motivo: 'Error de digitación' } });
+check('anular venta a crédito', vAn.status === 200, vAn.body);
+check('cuenta anulada sale del listado', !(await api('GET', '/api/cuentas', { token: admin })).body.some((x) => x.id_venta === vC.body.id_venta));
+const bita = await api('GET', '/api/bitacora', { token: admin });
+const acciones = bita.body.map((b) => b.accion);
+check('bitácora registra apertura, cierre, precio y anulación',
+  ['Apertura de caja', 'Cierre de caja', 'Cambio de precio', 'Anular venta', 'Abono'].every((a) => acciones.includes(a)), acciones);
+check('bitácora guarda quién fue', bita.body.some((b) => b.accion === 'Anular venta' && b.usuario === 'admin' && /Error de digitaci/.test(b.detalle)), bita.body[0]);
+check('bitácora solo admin', (await api('GET', '/api/bitacora', { token: lucia })).status === 403);
+check('conciliación sigue en cero', (await api('GET', '/api/inventario/conciliacion', { token: admin })).body.length === 0);
+
 console.log(`\n${ok} comprobaciones correctas${process.exitCode ? ' — HAY FALLAS' : ''}`);
 server.close();
 await pool.end();

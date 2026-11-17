@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { q, tx } from '../db.js';
 import { ah, notFound, toInt, bad, pageParams, HttpError } from '../utils.js';
 import { requireRole } from '../auth.js';
+import { audit } from '../bitacora.js';
 
 const router = Router();
 const atiende = requireRole('Vendedor');
@@ -50,6 +51,7 @@ router.patch('/:id/estado', atiende, ah(async (req, res) => {
     if (!SIGUIENTE[actual.estado].includes(estado))
       throw new HttpError(409, `Un pedido ${actual.estado} no puede pasar a ${estado}`);
     await q('UPDATE pedido SET estado = $1, id_usuario_atendio = $2 WHERE id_pedido = $3', [estado, req.user.id_usuario, id], c);
+    await audit(req, 'Pedido ' + estado, 'pedido', id, `Antes: ${actual.estado}`, c);
   });
   res.json({ id_pedido: id, estado });
 }));

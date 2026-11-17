@@ -21,6 +21,9 @@ import reparacionesRoutes from './routes/reparaciones.js';
 import reportesRoutes from './routes/reportes.js';
 import publicoRoutes from './routes/publico.js';
 import pedidosRoutes from './routes/pedidos.js';
+import cajaRoutes from './routes/caja.js';
+import cuentasRoutes from './routes/cuentas.js';
+import bitacoraRoutes from './routes/bitacora.js';
 
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 24) {
   throw new Error('Define JWT_SECRET (mínimo 24 caracteres) en el archivo .env');
@@ -53,6 +56,9 @@ app.use('/api/compras', comprasRoutes);
 app.use('/api/ventas', ventasRoutes);
 app.use('/api/reparaciones', reparacionesRoutes);
 app.use('/api/pedidos', pedidosRoutes);
+app.use('/api/caja', cajaRoutes);
+app.use('/api/cuentas', cuentasRoutes);
+app.use('/api/bitacora', bitacoraRoutes);
 app.use('/api/reportes', reportesRoutes);
 
 // Sitio web: si existe la carpeta public/ (build de la web), la API la sirve también.

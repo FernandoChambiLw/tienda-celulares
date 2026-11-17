@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { lookupsApi, salesApi } from '../../api/panel/panelApi';
 import { useAuth } from '../../auth/AuthContext';
 import CartLine from '../../components/panel/CartLine';
@@ -21,9 +21,13 @@ export default function NewSalePage() {
   usePageTitle('Nueva venta');
   const { user } = useAuth();
   const cart = useCart();
+  const order = useLocation().state?.order ?? null;
   const [customer, setCustomer] = useState(null);
   const [methodId, setMethodId] = useState('');
   const [invoice, setInvoice] = useState(false);
+  const [credit, setCredit] = useState(false);
+  const [advance, setAdvance] = useState('');
+  const [dueDate, setDueDate] = useState('');
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState('');
   const [done, setDone] = useState(null);
@@ -43,6 +47,7 @@ export default function NewSalePage() {
         id_cliente: customer.id_cliente,
         id_metodo_pago: Number(methodId),
         facturar: invoice,
+        ...(credit ? { credito: { adelanto: Number(advance) || 0, vence: dueDate || undefined } } : {}),
         items: cart.toItems(),
       });
       setDone(sale);
@@ -57,6 +62,9 @@ export default function NewSalePage() {
     cart.clear();
     setCustomer(null);
     setInvoice(false);
+    setCredit(false);
+    setAdvance('');
+    setDueDate('');
     setDone(null);
   };
 
@@ -69,6 +77,7 @@ export default function NewSalePage() {
           {done.numero_factura && ` · Factura ${done.numero_factura}`}
         </p>
         <strong className={styles.doneTotal}>{formatBs(Number(done.total))}</strong>
+        {done.saldo_credito > 0 && <p>Venta a crédito · saldo pendiente <strong>{formatBs(Number(done.saldo_credito))}</strong></p>}
         <div className={styles.doneActions}>
           <button type="button" className="button is-primary is-rounded" onClick={startOver}>Nueva venta</button>
           <Link className="button is-primary is-outlined is-rounded" to="/panel/ventas">Ver ventas</Link>
@@ -80,6 +89,12 @@ export default function NewSalePage() {
   return (
     <>
       <PageHeader title="Nueva venta" subtitle="Elige el cliente, agrega los productos y confirma." />
+      {order && (
+        <div className="notification is-info is-light">
+          <strong>Pedido N° {order.id_pedido}</strong> de {order.nombre_cliente} ({order.telefono}{order.ci && `, CI ${order.ci}`}): {order.items.map((it) => `${it.cantidad} × ${it.producto}`).join(' · ')}.
+          <br />Busca o registra al cliente y agrega estos productos. Cuando la venta esté hecha, marca el pedido como Entregado.
+        </div>
+      )}
       <AsyncView loading={lookups.loading} error={lookups.error} onRetry={lookups.reload}>
         <div className={styles.grid}>
           <div className={styles.col}>
@@ -117,6 +132,16 @@ export default function NewSalePage() {
             <label className={styles.check}>
               <input type="checkbox" checked={invoice} onChange={(e) => setInvoice(e.target.checked)} /> Emitir factura
             </label>
+            <label className={styles.check}>
+              <input type="checkbox" checked={credit} onChange={(e) => setCredit(e.target.checked)} /> Venta a crédito (queda saldo por cobrar)
+            </label>
+            {credit && (
+              <div className="field">
+                <input className="input" type="number" min="0" step="0.01" placeholder="Adelanto que paga hoy (Bs)" value={advance} onChange={(e) => setAdvance(e.target.value)} aria-label="Adelanto" />
+                <input className="input mt-2" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} aria-label="Fecha límite de pago" />
+                <p className="help">El adelanto entra a la caja con el método de pago elegido. Fecha límite opcional.</p>
+              </div>
+            )}
             <p className={styles.subtotal}>
               Subtotal <strong>{formatBs(cart.subtotal)}</strong>
             </p>

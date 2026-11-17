@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit';
 import { q } from '../db.js';
 import { ah, required, HttpError } from '../utils.js';
 import { auth, signToken } from '../auth.js';
+import { audit } from '../bitacora.js';
 
 const router = Router();
 
@@ -67,6 +68,7 @@ router.post('/cambiar-clave', auth, ah(async (req, res) => {
     throw new HttpError(401, 'La clave actual es incorrecta');
   await q('UPDATE usuario SET password_hash = $1 WHERE id_usuario = $2',
     [await bcrypt.hash(String(req.body.nueva), 10), req.user.id_usuario]);
+  await audit(req, 'Cambio de clave', 'usuario', req.user.id_usuario, null);
   res.json({ ok: true });
 }));
 

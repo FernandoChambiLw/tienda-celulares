@@ -3,6 +3,7 @@ import { q, tx } from '../db.js';
 import { ah, required, notFound, toInt, toNum, bad, pageParams } from '../utils.js';
 import { requireRole } from '../auth.js';
 import { resolverAlmacen, validarItems } from './_comun.js';
+import { audit } from '../bitacora.js';
 
 const router = Router();
 const vende = requireRole('Vendedor');
@@ -11,12 +12,13 @@ const r2 = (n) => Math.round(n * 100) / 100;
 const CABECERA = `
   SELECT vt.*, c.nombres || ' ' || c.apellido_paterno AS cliente, c.ci AS cliente_ci,
          e.nombres || ' ' || e.apellido_paterno AS vendedor, mp.nombre AS metodo_pago,
-         f.numero_factura
+         f.numero_factura, cs.saldo AS saldo_credito
     FROM v_venta_total vt
     JOIN cliente c USING (id_cliente)
     JOIN empleado e ON e.id_empleado = vt.id_empleado
     JOIN metodo_pago mp USING (id_metodo_pago)
-    LEFT JOIN factura f ON f.id_venta = vt.id_venta`;
+    LEFT JOIN factura f ON f.id_venta = vt.id_venta
+    LEFT JOIN v_cuenta_saldo cs ON cs.id_venta = vt.id_venta AND cs.estado <> 'Anulada'`;
 
 async function ventaCompleta(id, c) {
   const v = (await q(`${CABECERA} WHERE vt.id_venta = $1`, [id], c)).rows[0];
@@ -136,6 +138,19 @@ router.post('/', vende, ah(async (req, res) => {
     const tot = (await q('SELECT total, subtotal FROM v_venta_total WHERE id_venta = $1', [idVenta], c)).rows[0];
     if (tot.total < 0) throw bad('El descuento general supera el total de la venta');
 
+    // Venta a crédito: se registra la cuenta por cobrar y el adelanto (si lo hay) como primer abono.
+    if (req.body.credito) {
+      const adelanto = toNum(req.body.credito.adelanto ?? 0, 'adelanto');
+      if (adelanto > tot.total) throw bad('El adelanto no puede superar el total');
+      const cu = (await q(
+        `INSERT INTO cuenta_cobrar (id_venta, id_cliente, total, vence) VALUES ($1,$2,$3,$4) RETURNING id_cuenta`,
+        [idVenta, req.body.id_cliente, tot.total, req.body.credito.vence || null], c)).rows[0].id_cuenta;
+      if (adelanto > 0)
+        await q(`INSERT INTO abono_cuenta (id_cuenta, monto, id_metodo_pago, id_empleado) VALUES ($1,$2,$3,$4)`,
+          [cu, adelanto, req.body.id_metodo_pago, req.user.id_empleado], c);
+      if (adelanto >= tot.total) await q("UPDATE cuenta_cobrar SET estado = 'Pagada' WHERE id_cuenta = $1", [cu], c);
+    }
+
     if (req.body.facturar) {
       await q('LOCK TABLE factura IN EXCLUSIVE MODE', [], c);
       const n = (await q('SELECT COALESCE(MAX(id_factura),0) + 1 AS n FROM factura', [], c)).rows[0].n;
@@ -145,6 +160,7 @@ router.post('/', vende, ah(async (req, res) => {
     }
     return idVenta;
   });
+  await audit(req, req.body.credito ? 'Venta a crédito' : 'Venta', 'venta', id, null);
   res.status(201).json(await ventaCompleta(id));
 }));
 
@@ -175,6 +191,8 @@ router.patch('/:id/anular', requireRole(), ah(async (req, res) => {
     await q('DELETE FROM detalle_venta_unidad WHERE id_venta = $1', [id], c);
     await q("UPDATE garantia SET estado = 'Anulada' WHERE id_venta = $1", [id], c);
     await q("UPDATE venta SET estado = 'Anulada' WHERE id_venta = $1", [id], c);
+    await q("UPDATE cuenta_cobrar SET estado = 'Anulada' WHERE id_venta = $1", [id], c);
+    await audit(req, 'Anular venta', 'venta', id, req.body?.motivo ? `Motivo: ${req.body.motivo}` : 'Venta anulada', c);
   });
   res.json(await ventaCompleta(id));
 }));

@@ -3,7 +3,7 @@ import { HttpError } from './utils.js';
 
 export function signToken(user) {
   return jwt.sign(
-    { id_usuario: user.id_usuario, id_empleado: user.id_empleado, rol: user.rol, id_sucursal: user.id_sucursal },
+    { id_usuario: user.id_usuario, username: user.username, id_empleado: user.id_empleado, rol: user.rol, id_sucursal: user.id_sucursal },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES || '8h' },
   );

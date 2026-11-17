@@ -28,8 +28,25 @@ reparaciones; todas las tablas con **buscador, paginación, exportar a CSV e imp
 2. Un ajuste manual que hiciste tú y por qué.
 3. Capturas del sitio funcionando.
 
-## Base de datos: extensión 04 (36 tablas)
+## Base de datos: extensión 04 (36 tablas; la 05 llega a 42)
 `celulares_api/db/04_pedidos_fotos.sql` agrega 3 tablas sobre las 33 originales y una vista:
 `pedido`, `detalle_pedido`, `producto_foto` y `v_pedido_total`. Es idempotente y la aplica `init-db` en cada arranque.
 Las fotos ahora se guardan en la base (`producto_foto`, BYTEA, máx. 3 MB) y no en disco, así no se pierden al redesplegar.
 El diagrama ER y el respaldo entregados corresponden a las 33 tablas; si se entrega esta versión, hay que regenerarlos.
+
+## Fase 2: operación diaria del negocio (extensión 05, 42 tablas)
+`celulares_api/db/05_caja_cobros_bitacora.sql` (idempotente, la aplica `init-db`) agrega 5 tablas y 1 vista:
+`bitacora`, `caja`, `movimiento_caja`, `cuenta_cobrar`, `abono_cuenta` y `v_cuenta_saldo`.
+
+| Función | Dónde | Quién |
+|---|---|---|
+| **Caja diaria**: abrir con monto inicial, ingresos/egresos manuales, cerrar contando el efectivo; el sistema calcula el esperado (inicial + efectivo cobrado + ingresos − egresos) y la diferencia | Panel → Caja | Vendedor, Admin |
+| **Ventas a crédito**: casilla "Venta a crédito" con adelanto y fecha límite; crea la cuenta por cobrar | Nueva venta | Vendedor, Admin |
+| **Cuentas por cobrar**: saldo por cliente, abonos con método de pago, recordatorio por WhatsApp; los abonos entran a la caja de quien cobra | Panel → Por cobrar | Vendedor, Admin |
+| **Reportes por fechas**: vendido, costo, utilidad y margen; por vendedor, producto, marca, método y día; exporta CSV / imprime | Panel → Reportes | Admin |
+| **Reposición**: productos bajo el mínimo agrupados por su último proveedor, con cantidad sugerida (doble del mínimo) | Panel → Reposición | Admin, Almacenero |
+| **Bitácora**: quién anuló una venta (con motivo), cambió un precio, abrió/cerró caja, cobró un abono o cambió un pedido | Panel → Bitácora | Admin |
+| **Pedido → venta**: botón "Registrar venta" en el pedido lleva a Nueva venta con los datos del pedido a la vista | Pedidos | Vendedor, Admin |
+
+Notas: la utilidad usa el costo de compra *actual* del producto; las ventas a crédito cuentan como vendidas al registrarse y como cobro de caja
+solo por lo realmente pagado (adelanto y abonos). Las pruebas automáticas (`npm test`) llegan a 108 comprobaciones.

@@ -25,6 +25,11 @@ const ProductsAdminPage = lazy(() => import('./pages/panel/ProductsAdminPage'));
 const ProductFormPage = lazy(() => import('./pages/panel/ProductFormPage'));
 const OrdersPage = lazy(() => import('./pages/panel/OrdersPage'));
 const ReceiptPage = lazy(() => import('./pages/panel/ReceiptPage'));
+const CashPage = lazy(() => import('./pages/panel/CashPage'));
+const AccountsPage = lazy(() => import('./pages/panel/AccountsPage'));
+const ReportsPage = lazy(() => import('./pages/panel/ReportsPage'));
+const RestockPage = lazy(() => import('./pages/panel/RestockPage'));
+const AuditPage = lazy(() => import('./pages/panel/AuditPage'));
 const RepairsPage = lazy(() => import('./pages/panel/RepairsPage'));
 
 const { admin, seller, tech, storekeeper } = ROLES;
@@ -54,9 +59,16 @@ export default function App() {
             <Route path="ventas/nueva" element={<NewSalePage />} />
             <Route path="ventas/:id/comprobante" element={<ReceiptPage />} />
             <Route path="pedidos" element={<OrdersPage />} />
+            <Route path="caja" element={<CashPage />} />
+            <Route path="cobros" element={<AccountsPage />} />
+          </Route>
+          <Route element={<RequireAuth roles={[admin]} />}>
+            <Route path="reportes" element={<ReportsPage />} />
+            <Route path="bitacora" element={<AuditPage />} />
           </Route>
           <Route path="inventario" element={<InventoryPage />} />
           <Route element={<RequireAuth roles={[admin, storekeeper]} />}>
+            <Route path="reposicion" element={<RestockPage />} />
             <Route path="productos" element={<ProductsAdminPage />} />
             <Route path="productos/nuevo" element={<ProductFormPage />} />
             <Route path="productos/:id" element={<ProductFormPage />} />
