@@ -30,6 +30,7 @@ const CashPage = lazy(() => import('./pages/panel/CashPage'));
 const AccountsPage = lazy(() => import('./pages/panel/AccountsPage'));
 const ReportsPage = lazy(() => import('./pages/panel/ReportsPage'));
 const RestockPage = lazy(() => import('./pages/panel/RestockPage'));
+const BackupPage = lazy(() => import('./pages/panel/BackupPage'));
 const AuditPage = lazy(() => import('./pages/panel/AuditPage'));
 const WarrantyAdminPage = lazy(() => import('./pages/panel/WarrantyAdminPage'));
 const RepairsPage = lazy(() => import('./pages/panel/RepairsPage'));
@@ -68,6 +69,7 @@ export default function App() {
           <Route element={<RequireAuth roles={[admin]} />}>
             <Route path="reportes" element={<ReportsPage />} />
             <Route path="bitacora" element={<AuditPage />} />
+            <Route path="respaldo" element={<BackupPage />} />
           </Route>
           <Route path="inventario" element={<InventoryPage />} />
           <Route path="garantias" element={<WarrantyAdminPage />} />

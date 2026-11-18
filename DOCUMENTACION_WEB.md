@@ -28,13 +28,13 @@ reparaciones; todas las tablas con **buscador, paginación, exportar a CSV e imp
 2. Un ajuste manual que hiciste tú y por qué.
 3. Capturas del sitio funcionando.
 
-## Base de datos: extensión 04 (36 tablas; la 05 llega a 42)
+## Base de datos: extensión 04 (36 tablas; la 05 llega a 41)
 `celulares_api/db/04_pedidos_fotos.sql` agrega 3 tablas sobre las 33 originales y una vista:
 `pedido`, `detalle_pedido`, `producto_foto` y `v_pedido_total`. Es idempotente y la aplica `init-db` en cada arranque.
 Las fotos ahora se guardan en la base (`producto_foto`, BYTEA, máx. 3 MB) y no en disco, así no se pierden al redesplegar.
 El diagrama ER y el respaldo entregados corresponden a las 33 tablas; si se entrega esta versión, hay que regenerarlos.
 
-## Fase 2: operación diaria del negocio (extensión 05, 42 tablas)
+## Fase 2: operación diaria del negocio (extensión 05, 41 tablas)
 `celulares_api/db/05_caja_cobros_bitacora.sql` (idempotente, la aplica `init-db`) agrega 5 tablas y 1 vista:
 `bitacora`, `caja`, `movimiento_caja`, `cuenta_cobrar`, `abono_cuenta` y `v_cuenta_saldo`.
 
@@ -57,3 +57,10 @@ solo por lo realmente pagado (adelanto y abonos). Las pruebas automáticas (`npm
 - **Garantía en el panel** (`Garantías`): por IMEI muestra a quién se vendió, cuándo, estado de la garantía y reparaciones previas. Para administrador, vendedor y técnico.
 - **Resumen del administrador**: se agregan «Por cobrar» y «Cajas abiertas».
 Pruebas automáticas: 123 comprobaciones.
+
+## Fase 4: respaldo y base estable (sin tablas nuevas)
+- **Respaldo desde el panel** (`Respaldo`, solo administrador): descarga un JSON con las 41 tablas (incluidas las fotos), tomado en una transacción consistente. Cada descarga queda en la bitácora.
+- **Aviso en el resumen**: si pasaron 7 días (o nunca se hizo) sin respaldo, el administrador ve una alerta.
+- **Restauración**: `node scripts/restore-backup.mjs archivo.json` reemplaza los datos de la base de `DATABASE_URL`. Respeta el orden de las llaves foráneas, completa las llaves circulares (sucursal ↔ empleado), desactiva los triggers de stock/IMEI durante la carga (el respaldo ya trae el stock final) y deja los contadores de ID al día. Probado: ida y vuelta con ventas, fotos, cajas y cuentas por cobrar, con cifras idénticas.
+- **Migración a Neon**: ver `MIGRAR_A_NEON.md` (la base gratis de Render se borra a los 30 días). `render.neon.yaml` es el Blueprint para usar una base externa.
+Pruebas automáticas: 127 comprobaciones.

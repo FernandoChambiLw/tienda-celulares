@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { reportsApi } from '../../api/panel/panelApi';
 import { useAsync } from '../../hooks/useAsync';
 import { formatBs } from '../../utils/format';
@@ -16,6 +17,16 @@ export default function AdminSummary() {
     <AsyncView loading={loading} error={error} onRetry={reload}>
       {data && (
         <div className={styles.stack}>
+          {(() => {
+            const dias = data.ultimo_respaldo ? Math.floor((Date.now() - new Date(data.ultimo_respaldo.replace(' ', 'T') + 'Z').getTime()) / 86400000) : null;
+            if (dias !== null && dias < 7) return null;
+            return (
+              <div className="notification is-warning is-light no-print" role="note">
+                {dias === null ? 'Todavía no hiciste ningún respaldo de tus datos.' : `Tu último respaldo fue hace ${dias} días.`}{' '}
+                <Link to="/panel/respaldo">Descargar respaldo ahora</Link>
+              </div>
+            );
+          })()}
           <div className={styles.stats}>
             <StatCard label="Ventas de hoy" value={formatBs(Number(data.ventas_hoy.total))} hint={`${data.ventas_hoy.ventas} ventas`} />
             <StatCard label="Ventas del mes" value={formatBs(Number(data.ventas_mes.total))} hint={`${data.ventas_mes.ventas} ventas`} />

@@ -78,3 +78,7 @@ export const ordersApi = {
   get: (id) => request(`/pedidos/${id}`),
   setStatus: (id, estado) => request(`/pedidos/${id}/estado`, { method: 'PATCH', body: { estado } }),
 };
+
+export const backupApi = {
+  download: () => request('/respaldo'),
+};

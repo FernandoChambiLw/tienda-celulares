@@ -1,6 +1,6 @@
 -- =====================================================================
 -- Extensión v4 (Fase 2): bitácora, caja diaria y cuentas por cobrar.
--- IDEMPOTENTE. Se aplica sobre las 36 tablas anteriores (queda en 42).
+-- IDEMPOTENTE. Se aplica sobre las 36 tablas anteriores (queda en 41).
 --   + bitacora       : quién hizo qué y cuándo (anular ventas, precios, etc.)
 --   + caja           : apertura y cierre de caja por empleado
 --   + movimiento_caja: ingresos / egresos manuales de la caja

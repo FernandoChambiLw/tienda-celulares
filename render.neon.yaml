@@ -1,0 +1,30 @@
+# Variante para usar una base PostgreSQL EXTERNA (Neon): la base ya no es de Render.
+# Para usarla: borra render.yaml y renombra este archivo a render.yaml (ver MIGRAR_A_NEON.md).
+# La URL de la base se escribe una sola vez en el panel de Render (Environment > DATABASE_URL).
+services:
+  - type: web
+    name: tienda-celulares
+    runtime: node
+    plan: free
+    healthCheckPath: /api/salud
+    # 1) compila la web (sin datos de ejemplo, usando la API) y la copia dentro de la API
+    # 2) instala la API
+    buildCommand: >-
+      npm --prefix tienda-celulares-web install --include=dev &&
+      npm --prefix tienda-celulares-web run build &&
+      npm --prefix celulares_api install &&
+      rm -rf celulares_api/public &&
+      cp -r tienda-celulares-web/dist celulares_api/public
+    # La primera vez crea las tablas y carga los datos de prueba; después solo arranca.
+    startCommand: npm --prefix celulares_api start
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: VITE_USE_MOCK
+        value: "false"
+      - key: VITE_API_URL
+        value: /api

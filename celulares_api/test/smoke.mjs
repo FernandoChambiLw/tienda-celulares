@@ -268,6 +268,14 @@ check('bitácora registra el cambio de reparación', bit3.some((b) => b.accion =
 const rs = (await api('GET', '/api/reportes/resumen', { token: admin })).body;
 check('resumen trae por cobrar y cajas abiertas', rs.por_cobrar && typeof rs.cajas_abiertas === 'number', rs);
 
+console.log('Fase 4: respaldo');
+const resp = await fetch(`${base}/api/respaldo`, { headers: { Authorization: `Bearer ${admin}` } });
+const resp_json = await resp.json();
+check('respaldo: descarga todas las tablas', resp.status === 200 && Object.keys(resp_json.tablas).length >= 41 && /attachment/.test(resp.headers.get('content-disposition')), Object.keys(resp_json.tablas ?? {}).length);
+check('respaldo: incluye ventas y usuarios', resp_json.tablas.venta.length > 0 && resp_json.tablas.usuario.length >= 4);
+check('respaldo solo admin', (await api('GET', '/api/respaldo', { token: lucia })).status === 403);
+check('respaldo queda en la bitácora y en el resumen', (await api('GET', '/api/reportes/resumen', { token: admin })).body.ultimo_respaldo != null);
+
 console.log(`\n${ok} comprobaciones correctas${process.exitCode ? ' — HAY FALLAS' : ''}`);
 server.close();
 await pool.end();

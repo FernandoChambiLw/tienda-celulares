@@ -26,7 +26,7 @@ try {
       console.log(`[init-db] Ejecutando ${file} ...`);
       await client.query(fs.readFileSync(path.join(dbDir, file), 'utf8'));
     }
-    console.log('[init-db] Base inicializada (36 tablas (más 6 de las extensiones) + datos de prueba).');
+    console.log('[init-db] Base inicializada (41 tablas + datos de prueba).');
   }
   // Extensiones posteriores (pedidos, fotos): idempotentes, se aplican siempre.
   for (const file of ['04_pedidos_fotos.sql', '05_caja_cobros_bitacora.sql']) {

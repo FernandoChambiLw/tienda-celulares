@@ -7,7 +7,7 @@ const router = Router();
 
 // GET /api/reportes/resumen  (panel de inicio)
 router.get('/resumen', requireRole(), ah(async (_req, res) => {
-  const [hoy, mes, bajo, reps, top, por_dia, gar, por_mes, pedidos, cobrar, cajas] = await Promise.all([
+  const [hoy, mes, bajo, reps, top, por_dia, gar, por_mes, pedidos, cobrar, cajas, respaldo] = await Promise.all([
     q(`SELECT COUNT(*)::int AS ventas, COALESCE(SUM(total),0) AS total FROM v_venta_total
         WHERE estado = 'Completada' AND fecha_hora::date = CURRENT_DATE`),
     q(`SELECT COUNT(*)::int AS ventas, COALESCE(SUM(total),0) AS total FROM v_venta_total
@@ -29,12 +29,13 @@ router.get('/resumen', requireRole(), ah(async (_req, res) => {
     q(`SELECT COUNT(*)::int AS n FROM pedido WHERE estado = 'Nuevo'`),
     q(`SELECT COALESCE(SUM(saldo),0) AS total, COUNT(*)::int AS n FROM v_cuenta_saldo WHERE estado = 'Pendiente'`),
     q(`SELECT COUNT(*)::int AS n FROM caja WHERE estado = 'Abierta'`),
+    q(`SELECT MAX(fecha_hora) AS fecha FROM bitacora WHERE accion = 'Respaldo'`),
   ]);
   res.json({
     ventas_hoy: hoy.rows[0], ventas_mes: mes.rows[0], productos_bajo_stock: bajo.rows[0].n,
     reparaciones_por_estado: reps.rows, top_productos_30d: top.rows, ventas_ultimos_7_dias: por_dia.rows,
     garantias_por_vencer_30d: gar.rows[0].n, ventas_ultimos_6_meses: por_mes.rows, pedidos_nuevos: pedidos.rows[0].n,
-    por_cobrar: cobrar.rows[0], cajas_abiertas: cajas.rows[0].n,
+    por_cobrar: cobrar.rows[0], cajas_abiertas: cajas.rows[0].n, ultimo_respaldo: respaldo.rows[0].fecha,
   });
 }));
 
