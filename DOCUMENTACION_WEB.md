@@ -50,3 +50,10 @@ El diagrama ER y el respaldo entregados corresponden a las 33 tablas; si se entr
 
 Notas: la utilidad usa el costo de compra *actual* del producto; las ventas a crédito cuentan como vendidas al registrarse y como cobro de caja
 solo por lo realmente pagado (adelanto y abonos). Las pruebas automáticas (`npm test`) llegan a 108 comprobaciones.
+
+## Fase 3: servicio al cliente (sin tablas nuevas)
+- **Reparaciones desde el panel**: el técnico (o el administrador) abre «Gestionar», cambia el estado, el diagnóstico y la mano de obra. Al pasar a **Listo** aparece el botón **Avisar por WhatsApp**, con el mensaje ya escrito (modelo, N° de orden y total a pagar) hacia el teléfono del cliente. Cada cambio de estado queda en la bitácora.
+- **Garantía pública** (`/garantia`): el cliente escribe el IMEI y ve modelo y vigencia; no se muestra ningún dato personal. Tiene límite de consultas por IP.
+- **Garantía en el panel** (`Garantías`): por IMEI muestra a quién se vendió, cuándo, estado de la garantía y reparaciones previas. Para administrador, vendedor y técnico.
+- **Resumen del administrador**: se agregan «Por cobrar» y «Cajas abiertas».
+Pruebas automáticas: 123 comprobaciones.

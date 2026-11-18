@@ -12,6 +12,7 @@ const LINKS = [
   { to: '/catalogo', label: 'Catálogo' },
   { to: '/promociones', label: 'Promociones' },
   { to: '/reparacion', label: 'Mi reparación' },
+  { to: '/garantia', label: 'Garantía' },
   { to: '/contacto', label: 'Contacto' },
 ];
 

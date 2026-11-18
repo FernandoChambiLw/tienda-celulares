@@ -65,6 +65,12 @@ export const lookupsApi = {
 
 export const repairsApi = {
   list: (params) => request('/reparaciones', { params }),
+  get: (id) => request(`/reparaciones/${id}`),
+  update: (id, body) => request(`/reparaciones/${id}`, { method: 'PATCH', body }),
+};
+
+export const warrantyAdminApi = {
+  byImei: (imei) => request(`/garantias/imei/${encodeURIComponent(imei)}`),
 };
 
 export const ordersApi = {

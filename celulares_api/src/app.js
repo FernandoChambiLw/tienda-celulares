@@ -22,6 +22,7 @@ import reportesRoutes from './routes/reportes.js';
 import publicoRoutes from './routes/publico.js';
 import pedidosRoutes from './routes/pedidos.js';
 import cajaRoutes from './routes/caja.js';
+import garantiasRoutes from './routes/garantias.js';
 import cuentasRoutes from './routes/cuentas.js';
 import bitacoraRoutes from './routes/bitacora.js';
 
@@ -57,6 +58,7 @@ app.use('/api/ventas', ventasRoutes);
 app.use('/api/reparaciones', reparacionesRoutes);
 app.use('/api/pedidos', pedidosRoutes);
 app.use('/api/caja', cajaRoutes);
+app.use('/api/garantias', garantiasRoutes);
 app.use('/api/cuentas', cuentasRoutes);
 app.use('/api/bitacora', bitacoraRoutes);
 app.use('/api/reportes', reportesRoutes);

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { q, tx } from '../db.js';
 import { ah, required, pick, notFound, toInt, toNum, bad, insertSql, updateSql, pageParams } from '../utils.js';
 import { requireRole } from '../auth.js';
+import { audit } from '../bitacora.js';
 
 const router = Router();
 const taller = requireRole('Tecnico');
@@ -36,6 +37,7 @@ router.put('/repuestos/:id', bodega, ah(async (req, res) => {
 const CABECERA = `
   SELECT r.id_reparacion, r.fecha_ingreso, r.fecha_entrega_estimada, r.fecha_entrega_real, r.falla_reportada,
          r.diagnostico, r.estado, r.id_cliente, c.nombres || ' ' || c.apellido_paterno AS cliente,
+         (SELECT numero FROM telefono_cliente tc WHERE tc.id_cliente = c.id_cliente ORDER BY (tc.tipo = 'WhatsApp') DESC, tc.id_telefono LIMIT 1) AS cliente_telefono,
          r.id_unidad, r.id_equipo, r.id_garantia, r.id_empleado_tecnico,
          t.nombres || ' ' || t.apellido_paterno AS tecnico,
          COALESCE(u.imei, ex.imei) AS imei,
@@ -143,6 +145,8 @@ router.patch('/:id', taller, ah(async (req, res) => {
     }
     const s = updateSql('reparacion', 'id_reparacion', id, data);
     await q(s.text, s.values, c);
+    if (data.estado && data.estado !== cur.estado)
+      await audit(req, `Reparación ${data.estado}`, 'reparacion', id, `Antes: ${cur.estado}`, c);
   });
   res.json(await completa(id));
 }));

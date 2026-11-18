@@ -19,6 +19,7 @@ export const PANEL_NAV = [
   { to: '/panel/reposicion', label: 'Reposición', roles: [ROLES.admin, ROLES.storekeeper] },
   { to: '/panel/productos', label: 'Productos', roles: [ROLES.admin, ROLES.storekeeper] },
   { to: '/panel/reparaciones', label: 'Reparaciones', roles: [ROLES.admin, ROLES.tech] },
+  { to: '/panel/garantias', label: 'Garantías', roles: [ROLES.admin, ROLES.seller, ROLES.tech] },
   { to: '/panel/reportes', label: 'Reportes', roles: [ROLES.admin] },
   { to: '/panel/bitacora', label: 'Bitácora', roles: [ROLES.admin] },
 ];

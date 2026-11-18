@@ -11,6 +11,7 @@ const CatalogPage = lazy(() => import('./pages/CatalogPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const PromotionsPage = lazy(() => import('./pages/PromotionsPage'));
 const ComparePage = lazy(() => import('./pages/ComparePage'));
+const WarrantyPage = lazy(() => import('./pages/WarrantyPage'));
 const RepairStatusPage = lazy(() => import('./pages/RepairStatusPage'));
 const CartPage = lazy(() => import('./pages/CartPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
@@ -30,6 +31,7 @@ const AccountsPage = lazy(() => import('./pages/panel/AccountsPage'));
 const ReportsPage = lazy(() => import('./pages/panel/ReportsPage'));
 const RestockPage = lazy(() => import('./pages/panel/RestockPage'));
 const AuditPage = lazy(() => import('./pages/panel/AuditPage'));
+const WarrantyAdminPage = lazy(() => import('./pages/panel/WarrantyAdminPage'));
 const RepairsPage = lazy(() => import('./pages/panel/RepairsPage'));
 
 const { admin, seller, tech, storekeeper } = ROLES;
@@ -46,6 +48,7 @@ export default function App() {
         <Route path="comparar" element={<ComparePage />} />
         <Route path="carrito" element={<CartPage />} />
         <Route path="reparacion" element={<RepairStatusPage />} />
+        <Route path="garantia" element={<WarrantyPage />} />
         <Route path="contacto" element={<ContactPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
@@ -67,6 +70,7 @@ export default function App() {
             <Route path="bitacora" element={<AuditPage />} />
           </Route>
           <Route path="inventario" element={<InventoryPage />} />
+          <Route path="garantias" element={<WarrantyAdminPage />} />
           <Route element={<RequireAuth roles={[admin, storekeeper]} />}>
             <Route path="reposicion" element={<RestockPage />} />
             <Route path="productos" element={<ProductsAdminPage />} />

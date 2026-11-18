@@ -156,4 +156,20 @@ router.get('/reparacion', limiterReparacion, ah(async (req, res) => {
   res.json(rows[0]);
 }));
 
+// Consulta pública de garantía por IMEI. Solo devuelve modelo y vigencia: nada del cliente ni de la venta.
+router.get('/garantia', limiterReparacion, ah(async (req, res) => {
+  const imei = String(req.query.imei ?? '').replace(/\D/g, '');
+  if (imei.length < 14 || imei.length > 17) throw notFound('No encontramos un equipo vendido con ese IMEI');
+  const { rows } = await q(
+    `SELECT pc.modelo, p.nombre AS producto, g.fecha_inicio, g.fecha_fin, gv.dias_restantes, gv.estado_real AS estado, g.meses
+       FROM unidad_celular u
+       JOIN celular pc ON pc.id_producto = u.id_producto
+       JOIN producto p ON p.id_producto = u.id_producto
+       JOIN garantia g ON g.id_unidad = u.id_unidad
+       JOIN v_garantia_vigencia gv ON gv.id_garantia = g.id_garantia
+      WHERE u.imei = $1 ORDER BY g.fecha_fin DESC LIMIT 1`, [imei]);
+  if (!rows[0]) throw notFound('No encontramos un equipo vendido con ese IMEI');
+  res.json(rows[0]);
+}));
+
 export default router;

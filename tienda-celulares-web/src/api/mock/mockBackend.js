@@ -117,7 +117,13 @@ function getRepairStatus({ codigo, ci } = {}) {
   };
 }
 
+function getWarranty({ imei = '' } = {}) {
+  if (String(imei).replace(/\D/g, '').length < 14) throw new ApiError('No encontramos un equipo vendido con ese IMEI', 404);
+  return { modelo: 'Galaxy A15', fecha_inicio: '2026-10-01', fecha_fin: '2027-10-01', meses: 12, dias_restantes: 318, estado: 'Vigente' };
+}
+
 const routes = [
+  { pattern: /^\/publico\/garantia$/, handler: (_args, params) => getWarranty(params) },
   { pattern: /^\/publico\/reparacion$/, handler: (_args, params) => getRepairStatus(params) },
   { pattern: /^\/publico\/catalogo$/, handler: (_args, params) => listCatalog(params) },
   { pattern: /^\/publico\/catalogo\/(\d+)$/, handler: ([id]) => getCatalogItem(Number(id)) },

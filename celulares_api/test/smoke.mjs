@@ -241,6 +241,33 @@ check('bitácora guarda quién fue', bita.body.some((b) => b.accion === 'Anular 
 check('bitácora solo admin', (await api('GET', '/api/bitacora', { token: lucia })).status === 403);
 check('conciliación sigue en cero', (await api('GET', '/api/inventario/conciliacion', { token: admin })).body.length === 0);
 
+console.log('Fase 3: garantía por IMEI, aviso de reparación, resumen');
+const rSeed = (await api('GET', '/api/reparaciones/2', { token: admin })).body; // reparación de ejemplo: equipo vendido por la tienda
+const imeiV = rSeed.imei;
+const gp = await api('GET', `/api/publico/garantia?imei=${imeiV}`);
+check('garantía pública por IMEI', gp.status === 200 && gp.body.modelo && gp.body.fecha_fin && gp.body.estado, gp.body);
+check('garantía pública no expone datos del cliente', !('cliente' in gp.body) && !('id_cliente' in gp.body) && !('id_venta' in gp.body), gp.body);
+check('garantía pública IMEI inexistente → 404', (await api('GET', '/api/publico/garantia?imei=123456789012345')).status === 404);
+check('garantía pública IMEI corto → 404', (await api('GET', '/api/publico/garantia?imei=123')).status === 404);
+const gadm = await api('GET', `/api/garantias/imei/${imeiV}`, { token: lucia });
+check('garantía en panel: cliente, venta y garantías', gadm.status === 200 && gadm.body.cliente && gadm.body.garantias.length >= 1 && Array.isArray(gadm.body.reparaciones), gadm.body);
+check('garantía en panel exige sesión', (await api('GET', `/api/garantias/imei/${imeiV}`)).status === 401);
+check('garantía en panel: IMEI desconocido → 404', (await api('GET', '/api/garantias/imei/000000000000000', { token: lucia })).status === 404);
+check('la reparación de ejemplo aparece en la unidad', gadm.body.reparaciones.some((x) => x.id_reparacion === 2), gadm.body.reparaciones);
+check('la venta del equipo está vigente', gadm.body.garantias.some((g) => g.estado === 'Vigente'), gadm.body.garantias);
+
+const rNew = await api('POST', '/api/reparaciones', { token: marco, body: { id_cliente: 1, falla_reportada: 'Pantalla rota', equipo: { modelo: 'Redmi 12', id_marca: 1 } } });
+check('nueva reparación externa', rNew.status === 201, rNew.body);
+const rdet = await api('GET', `/api/reparaciones/${rNew.body.id_reparacion}`, { token: marco });
+check('reparación trae teléfono del cliente', rdet.status === 200 && 'cliente_telefono' in rdet.body, rdet.body);
+const rlisto = await api('PATCH', `/api/reparaciones/${rNew.body.id_reparacion}`, { token: marco, body: { estado: 'Listo', diagnostico: 'Cambio de conector', costo_mano_obra: 30 } });
+check('técnico marca la reparación Listo', rlisto.status === 200 && rlisto.body.estado === 'Listo', rlisto.body);
+check('vendedor no cambia reparaciones → 403', (await api('PATCH', `/api/reparaciones/${rNew.body.id_reparacion}`, { token: lucia, body: { estado: 'Entregado' } })).status === 403);
+const bit3 = (await api('GET', '/api/bitacora?accion=Reparaci', { token: admin })).body;
+check('bitácora registra el cambio de reparación', bit3.some((b) => b.accion === 'Reparación Listo' && b.usuario === 'marco'), bit3);
+const rs = (await api('GET', '/api/reportes/resumen', { token: admin })).body;
+check('resumen trae por cobrar y cajas abiertas', rs.por_cobrar && typeof rs.cajas_abiertas === 'number', rs);
+
 console.log(`\n${ok} comprobaciones correctas${process.exitCode ? ' — HAY FALLAS' : ''}`);
 server.close();
 await pool.end();

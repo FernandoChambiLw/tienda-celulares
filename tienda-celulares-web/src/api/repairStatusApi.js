@@ -4,3 +4,8 @@ import { get } from './transport';
 export const repairStatusApi = {
   find: ({ codigo, ci }) => get('/publico/reparacion', { codigo, ci }),
 };
+
+// Consulta pública de garantía: solo con el IMEI; devuelve modelo y vigencia, nada del cliente.
+export const warrantyApi = {
+  find: (imei) => get('/publico/garantia', { imei }),
+};
