@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { customersApi } from '../../api/panel/panelApi';
 import { useAsync } from '../../hooks/useAsync';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
+import ClientDialog from './ClientDialog';
 import styles from './Pickers.module.css';
 
 // Busca clientes por nombre o CI y permite elegir uno.
 export default function CustomerPicker({ value, onChange }) {
   const [text, setText] = useState('');
+  const [creating, setCreating] = useState(false);
   const term = useDebouncedValue(text.trim(), 300);
   const { data } = useAsync(() => (term ? customersApi.list({ q: term, estado: 'Activo', limit: 6 }) : Promise.resolve([])), [term]);
 
@@ -37,6 +39,8 @@ export default function CustomerPicker({ value, onChange }) {
           {data && !data.length && <li className={styles.none}>Sin coincidencias</li>}
         </ul>
       )}
+      <button type="button" className={styles.link} onClick={() => setCreating(true)}>+ Registrar cliente nuevo</button>
+      {creating && <ClientDialog onClose={() => setCreating(false)} onSaved={(c) => { setCreating(false); onChange(c); }} />}
     </div>
   );
 }

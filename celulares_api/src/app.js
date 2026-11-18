@@ -6,7 +6,8 @@ import express from 'express';
 import cors from 'cors';
 import { UPLOADS_DIR } from './config.js';
 import { errorHandler, notFoundHandler } from './errors.js';
-import { auth } from './auth.js';
+import helmet from 'helmet';
+import { auth, vigente } from './auth.js';
 
 import authRoutes from './routes/auth.js';
 import usuariosRoutes from './routes/usuarios.js';
@@ -35,6 +36,9 @@ if (!process.env.DATABASE_URL) throw new Error('Define DATABASE_URL en el archiv
 const app = express();
 // Detrás del proxy de Render (HTTPS): necesario para que el límite de intentos de login use la IP real.
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
+// Cabeceras de seguridad (sin CSP: el sitio usa fuentes externas y estilos en línea de Bulma).
+app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 const origins = (process.env.CORS_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean);
 app.use(cors(origins.length ? { origin: origins } : {}));
 app.use(express.json({ limit: '1mb' }));
@@ -47,7 +51,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/publico', publicoRoutes);
 
 // Protegidas
-app.use('/api', auth);
+app.use('/api', auth, vigente);
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/catalogos', catalogosRoutes);
 app.use('/api/clientes', clientesRoutes);

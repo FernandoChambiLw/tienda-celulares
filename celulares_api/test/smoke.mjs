@@ -276,6 +276,48 @@ check('respaldo: incluye ventas y usuarios', resp_json.tablas.venta.length > 0 &
 check('respaldo solo admin', (await api('GET', '/api/respaldo', { token: lucia })).status === 403);
 check('respaldo queda en la bitácora y en el resumen', (await api('GET', '/api/reportes/resumen', { token: admin })).body.ultimo_respaldo != null);
 
+console.log('Fase 5: producción (reserva de stock, altas de personal, clave inicial)');
+const pr = (await pool.query(`SELECT s.id_producto, s.stock_total - COALESCE(r.reservado,0) AS libre
+    FROM celulares.v_stock_producto s LEFT JOIN celulares.v_stock_reservado r USING (id_producto) JOIN celulares.producto p USING (id_producto)
+   WHERE p.estado='Activo' AND s.stock_total - COALESCE(r.reservado,0) BETWEEN 1 AND 25 ORDER BY 2 LIMIT 1`)).rows[0];
+check('hay un producto con poco stock para la prueba', !!pr, pr);
+let libre = pr.libre; const pedidosRes = [];
+while (libre > 0) {
+  const n = Math.min(10, libre);
+  const r1 = await api('POST', '/api/publico/pedidos', { body: { nombre: 'Reserva Prueba', telefono: '71234567', items: [{ id_producto: pr.id_producto, cantidad: n }] } });
+  check(`pedido de ${n} reserva stock`, r1.status === 201, r1.body); pedidosRes.push(r1.body.id_pedido); libre -= n;
+}
+const sobra = await api('POST', '/api/publico/pedidos', { body: { nombre: 'Tarde', telefono: '71234567', items: [{ id_producto: pr.id_producto, cantidad: 1 }] } });
+check('stock reservado: otro pedido → 409', sobra.status === 409, sobra.body);
+const catR = (await api('GET', '/api/publico/catalogo?limit=200')).body;
+check('el catálogo oculta lo ya reservado', !catR.some((x) => x.id_producto === pr.id_producto));
+check('cancelar un pedido libera la reserva', (await api('PATCH', `/api/pedidos/${pedidosRes[0]}/estado`, { token: lucia, body: { estado: 'Cancelado' } })).status === 200
+  && (await api('POST', '/api/publico/pedidos', { body: { nombre: 'Libre', telefono: '71234567', items: [{ id_producto: pr.id_producto, cantidad: 1 }] } })).status === 201);
+
+// alta de personal: empleado + usuario con clave temporal
+const emp = await api('POST', '/api/usuarios/empleados', { token: admin, body: { nombres: 'Nuevo', apellido_paterno: 'Vendedor', ci: '1112223', id_cargo: 2, salario: 2500 } });
+check('alta de empleado', emp.status === 201 && emp.body.id_empleado, emp.body);
+check('CI duplicado → 409', (await api('POST', '/api/usuarios/empleados', { token: admin, body: { nombres: 'X', apellido_paterno: 'Y', ci: '1112223', id_cargo: 2 } })).status === 409);
+check('empleados solo admin', (await api('GET', '/api/usuarios/empleados', { token: lucia })).status === 403);
+const usr = await api('POST', '/api/usuarios', { token: admin, body: { username: 'nuevo', password: 'Temporal123', rol: 'Vendedor', id_empleado: emp.body.id_empleado } });
+check('alta de usuario', usr.status === 201, usr.body);
+const lg = await api('POST', '/api/auth/login', { body: { username: 'nuevo', password: 'Temporal123' } });
+check('login avisa que debe cambiar la clave', lg.status === 200 && lg.body.usuario.debe_cambiar_clave === true, lg.body);
+check('con clave temporal no opera → 403', (await api('GET', '/api/productos', { token: lg.body.token })).status === 403);
+check('clave nueva igual a la actual → 400', (await api('POST', '/api/auth/cambiar-clave', { token: lg.body.token, body: { actual: 'Temporal123', nueva: 'Temporal123' } })).status === 400);
+const cc = await api('POST', '/api/auth/cambiar-clave', { token: lg.body.token, body: { actual: 'Temporal123', nueva: 'MiClaveSegura9' } });
+check('cambiar la clave devuelve token libre', cc.status === 200 && cc.body.token, cc.body);
+check('con token nuevo ya opera', (await api('GET', '/api/productos', { token: cc.body.token })).status === 200);
+check('cambio de rol se aplica al instante', (await api('PATCH', `/api/usuarios/${usr.body.id_usuario}`, { token: admin, body: { rol: 'Tecnico' } })).status === 200
+  && (await api('GET', '/api/cuentas', { token: cc.body.token })).status === 403);
+const rst = await api('PATCH', `/api/usuarios/${usr.body.id_usuario}`, { token: admin, body: { password: 'OtraTemporal88' } });
+check('restablecer clave exige cambiarla otra vez', rst.status === 200 && (await api('POST', '/api/auth/login', { body: { username: 'nuevo', password: 'OtraTemporal88' } })).body.usuario.debe_cambiar_clave === true);
+check('desactivar empleado corta su sesión al instante', (await api('PUT', `/api/usuarios/empleados/${emp.body.id_empleado}`, { token: admin, body: { estado: 'Inactivo' } })).status === 200
+  && (await api('GET', '/api/productos', { token: cc.body.token })).status === 401);
+check('no puedes desactivarte a ti mismo', (await api('PUT', `/api/usuarios/empleados/1`, { token: admin, body: { estado: 'Inactivo' } })).status === 400);
+const bit5 = (await api('GET', '/api/bitacora?limit=200', { token: admin })).body.map((b) => b.accion);
+check('bitácora de altas y ediciones de personal', ['Alta de empleado', 'Alta de usuario', 'Edición de usuario', 'Edición de empleado'].every((a) => bit5.includes(a)), bit5);
+
 console.log(`\n${ok} comprobaciones correctas${process.exitCode ? ' — HAY FALLAS' : ''}`);
 server.close();
 await pool.end();

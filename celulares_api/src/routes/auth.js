@@ -22,7 +22,7 @@ router.post('/login', limiter, ah(async (req, res) => {
   const { username, password } = req.body;
 
   const { rows } = await q(
-    `SELECT u.id_usuario, u.username, u.password_hash, u.rol, u.estado, u.id_empleado,
+    `SELECT u.id_usuario, u.username, u.password_hash, u.rol, u.estado, u.id_empleado, u.debe_cambiar_clave,
             e.nombres, e.apellido_paterno, e.id_sucursal, e.estado AS estado_empleado
        FROM usuario u JOIN empleado e ON e.id_empleado = u.id_empleado
       WHERE u.username = $1`,
@@ -41,7 +41,7 @@ router.post('/login', limiter, ah(async (req, res) => {
     usuario: {
       id_usuario: u.id_usuario, username: u.username, rol: u.rol,
       id_empleado: u.id_empleado, id_sucursal: u.id_sucursal,
-      nombre: `${u.nombres} ${u.apellido_paterno}`,
+      nombre: `${u.nombres} ${u.apellido_paterno}`, debe_cambiar_clave: u.debe_cambiar_clave,
     },
   });
 }));
@@ -49,7 +49,7 @@ router.post('/login', limiter, ah(async (req, res) => {
 // GET /api/auth/me
 router.get('/me', auth, ah(async (req, res) => {
   const { rows } = await q(
-    `SELECT u.id_usuario, u.username, u.rol, e.id_empleado, e.id_sucursal,
+    `SELECT u.id_usuario, u.username, u.rol, u.debe_cambiar_clave, e.id_empleado, e.id_sucursal,
             e.nombres || ' ' || e.apellido_paterno AS nombre
        FROM usuario u JOIN empleado e ON e.id_empleado = u.id_empleado
       WHERE u.id_usuario = $1`,
@@ -63,13 +63,15 @@ router.get('/me', auth, ah(async (req, res) => {
 router.post('/cambiar-clave', auth, ah(async (req, res) => {
   required(req.body, ['actual', 'nueva']);
   if (String(req.body.nueva).length < 8) throw new HttpError(400, 'La nueva clave debe tener al menos 8 caracteres');
-  const { rows } = await q('SELECT password_hash FROM usuario WHERE id_usuario = $1', [req.user.id_usuario]);
+  const { rows } = await q('SELECT u.*, e.id_sucursal FROM usuario u JOIN empleado e USING (id_empleado) WHERE u.id_usuario = $1', [req.user.id_usuario]);
   if (!rows[0] || !(await bcrypt.compare(String(req.body.actual), rows[0].password_hash)))
     throw new HttpError(401, 'La clave actual es incorrecta');
-  await q('UPDATE usuario SET password_hash = $1 WHERE id_usuario = $2',
+  if (String(req.body.nueva) === String(req.body.actual)) throw new HttpError(400, 'La nueva clave debe ser distinta de la actual');
+  await q('UPDATE usuario SET password_hash = $1, debe_cambiar_clave = FALSE WHERE id_usuario = $2',
     [await bcrypt.hash(String(req.body.nueva), 10), req.user.id_usuario]);
   await audit(req, 'Cambio de clave', 'usuario', req.user.id_usuario, null);
-  res.json({ ok: true });
+  // token nuevo, ya sin la restricción de "debe cambiar la clave"
+  res.json({ ok: true, token: signToken({ ...rows[0], debe_cambiar_clave: false }) });
 }));
 
 export default router;

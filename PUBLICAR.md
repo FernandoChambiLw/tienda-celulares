@@ -28,6 +28,7 @@ git push -u origin main
 ## 3. Comprobar (antes de enviarla)
 - `TU_URL/api/salud` → debe mostrar `{"ok":true}`
 - `TU_URL` → la vitrina con los productos
+- **Para un negocio real** (base limpia y claves propias) sigue `PRODUCCION.md`; lo de abajo es la demo.
 - `TU_URL/panel/login` → entra con `admin` / `Admin123!`
 
 Si todo eso funciona, **esa URL es la que le envías a tu docente**. Puedes agregar los usuarios de prueba:

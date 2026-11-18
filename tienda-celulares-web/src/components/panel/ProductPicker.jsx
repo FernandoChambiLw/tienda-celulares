@@ -6,7 +6,7 @@ import { formatBs } from '../../utils/format';
 import styles from './Pickers.module.css';
 
 // Busca productos activos; `disabledIds` son los que ya están en el carrito.
-export default function ProductPicker({ onPick, disabledIds }) {
+export default function ProductPicker({ onPick, disabledIds, anyStock = false }) {
   const [text, setText] = useState('');
   const term = useDebouncedValue(text.trim(), 300);
   const { data } = useAsync(() => (term ? productsAdminApi.list({ q: term, limit: 8 }) : Promise.resolve([])), [term]);
@@ -17,11 +17,11 @@ export default function ProductPicker({ onPick, disabledIds }) {
       {term && (
         <ul className={styles.results}>
           {(data ?? []).map((p) => {
-            const out = p.stock_total <= 0;
+            const out = !anyStock && p.stock_total <= 0;
             return (
               <li key={p.id_producto}>
                 <button type="button" disabled={out || disabledIds.includes(p.id_producto)} onClick={() => { onPick(p); setText(''); }}>
-                  {p.nombre} <small>{formatBs(Number(p.precio_venta))} · {out ? 'sin stock' : `${p.stock_total} en stock`}</small>
+                  {p.nombre} <small>{formatBs(Number(p.precio_venta))} · {anyStock ? `${formatBs(Number(p.precio_compra))} de compra · ${p.stock_total} en stock` : out ? 'sin stock' : `${p.stock_total} en stock`}</small>
                 </button>
               </li>
             );

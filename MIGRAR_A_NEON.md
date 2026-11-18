@@ -3,6 +3,8 @@
 **Por qué:** la base PostgreSQL gratis de Render se **borra a los 30 días** de creada (para este proyecto, alrededor del **12 de diciembre de 2026**) y no hace copias de seguridad. Neon tiene un plan gratis sin fecha de vencimiento.
 Hazlo con calma, **antes** de esa fecha. Mientras no cambies el paso 5, el sitio sigue funcionando como siempre.
 
+> **¿Vas a abrir el negocio real?** Lee antes `PRODUCCION.md`. En ese caso **omite los pasos 1 y 3** (no restaures los datos de la demo): la base nueva arranca limpia con `render.neon.yaml`.
+
 ## 1. Descargar un respaldo
 Entra al panel como administrador → **Respaldo** → **Descargar respaldo**. Guarda el archivo `respaldo-fx-AAAA-MM-DD.json` (si no puedes entrar, sáltate este paso: la base nueva arrancará con los datos de prueba).
 

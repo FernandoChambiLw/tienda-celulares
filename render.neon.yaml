@@ -22,6 +22,12 @@ services:
         value: 22
       - key: DATABASE_URL
         sync: false
+      # Base limpia para el negocio real: sin clientes, ventas ni usuarios de ejemplo.
+      - key: DATOS_DEMO
+        value: "no"
+      # Clave inicial del usuario «admin» (te obliga a cambiarla al entrar).
+      - key: ADMIN_PASSWORD
+        generateValue: true
       - key: JWT_SECRET
         generateValue: true
       - key: VITE_USE_MOCK

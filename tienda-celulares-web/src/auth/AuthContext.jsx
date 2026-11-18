@@ -40,7 +40,13 @@ export function AuthProvider({ children }) {
     setStatus('in');
   }, []);
 
-  const value = useMemo(() => ({ user, status, login, logout }), [user, status, login, logout]);
+  // Tras cambiar la clave inicial el servidor entrega un token nuevo, sin la restricción.
+  const passwordChanged = useCallback((result) => {
+    if (result?.token) session.save({ token: result.token });
+    setUser((u) => (u ? { ...u, debe_cambiar_clave: false } : u));
+  }, []);
+
+  const value = useMemo(() => ({ user, status, login, logout, passwordChanged }), [user, status, login, logout, passwordChanged]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

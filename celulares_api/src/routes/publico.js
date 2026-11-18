@@ -9,18 +9,19 @@ const router = Router();
 // Catálogo público: sin precio de compra ni datos internos; solo productos activos con stock.
 const BASE = `
   SELECT p.id_producto, p.codigo, p.nombre, p.descripcion, p.tipo_producto, p.precio_venta, p.garantia_meses,
-         p.foto_url, m.nombre AS marca, c.nombre AS categoria, s.stock_total > 0 AS disponible,
+         p.foto_url, m.nombre AS marca, c.nombre AS categoria, s.stock_total - COALESCE(rs.reservado, 0) > 0 AS disponible,
          pr.porcentaje_descuento AS promo_porcentaje, pr.nombre AS promo_nombre,
          ROUND(p.precio_venta * (1 - COALESCE(pr.porcentaje_descuento,0)/100), 2) AS precio_final
     FROM producto p
     JOIN marca m USING (id_marca) JOIN categoria c USING (id_categoria)
     JOIN v_stock_producto s USING (id_producto)
+    LEFT JOIN v_stock_reservado rs USING (id_producto)
     LEFT JOIN LATERAL (
         SELECT nombre, porcentaje_descuento FROM promocion x
          WHERE x.id_producto = p.id_producto AND x.estado = 'Vigente'
            AND CURRENT_DATE BETWEEN x.fecha_inicio AND x.fecha_fin
          ORDER BY porcentaje_descuento DESC LIMIT 1) pr ON TRUE
-   WHERE p.estado = 'Activo' AND s.stock_total > 0`;
+   WHERE p.estado = 'Activo' AND s.stock_total - COALESCE(rs.reservado, 0) > 0`;
 
 // GET /api/publico/catalogo?q=&tipo=&marca=&categoria=&min=&max=&orden=nombre|precio_asc|precio_desc
 router.get('/catalogo', ah(async (req, res) => {
@@ -70,7 +71,7 @@ router.get('/foto/:id', ah(async (req, res) => {
 
 // ---------- Pedidos desde el carrito de la web ----------
 // Se registra el pedido con el precio vigente AHORA (el servidor lo calcula; nunca se confía en el
-// precio que manda el navegador). El stock no se descuenta: eso ocurre cuando el vendedor registra la venta.
+// precio que manda el navegador). El stock físico no se descuenta aquí (eso ocurre al registrar la venta), pero el pedido RESERVA unidades mientras está Nuevo o Confirmado.
 const limiterPedido = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 10,
@@ -102,8 +103,12 @@ router.post('/pedidos', limiterPedido, ah(async (req, res) => {
   const ids = [...items.keys()];
 
   const out = await tx(async (c) => {
+    // Bloquea los productos para que dos pedidos simultáneos no reserven la misma última unidad.
+    await q('SELECT id_producto FROM producto WHERE id_producto = ANY($1) ORDER BY id_producto FOR UPDATE', [ids], c);
     const prods = (await q(`${BASE} AND p.id_producto = ANY($1)`, [ids], c)).rows;
-    const stock = new Map((await q('SELECT id_producto, stock_total FROM v_stock_producto WHERE id_producto = ANY($1)', [ids], c))
+    const stock = new Map((await q(
+      `SELECT s.id_producto, s.stock_total - COALESCE(rs.reservado, 0) AS stock_total
+         FROM v_stock_producto s LEFT JOIN v_stock_reservado rs USING (id_producto) WHERE s.id_producto = ANY($1)`, [ids], c))
       .rows.map((r) => [r.id_producto, r.stock_total]));
     const byId = new Map(prods.map((p) => [p.id_producto, p]));
     for (const [id, cantidad] of items) {

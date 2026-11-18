@@ -42,6 +42,29 @@ export const inventoryApi = {
 
 export const customersApi = {
   list: (params) => request('/clientes', { params }),
+  create: (body) => request('/clientes', { method: 'POST', body }),
+  update: (id, body) => request(`/clientes/${id}`, { method: 'PUT', body }),
+};
+
+export const suppliersApi = {
+  list: (params) => request('/proveedores', { params }),
+  create: (body) => request('/proveedores', { method: 'POST', body }),
+  update: (id, body) => request(`/proveedores/${id}`, { method: 'PUT', body }),
+};
+
+export const purchasesApi = {
+  list: (params) => request('/compras', { params }),
+  get: (id) => request(`/compras/${id}`),
+  create: (body) => request('/compras', { method: 'POST', body }),
+};
+
+export const staffApi = {
+  list: () => request('/usuarios/empleados'),
+  positions: () => request('/usuarios/cargos'),
+  createEmployee: (body) => request('/usuarios/empleados', { method: 'POST', body }),
+  updateEmployee: (id, body) => request(`/usuarios/empleados/${id}`, { method: 'PUT', body }),
+  createUser: (body) => request('/usuarios', { method: 'POST', body }),
+  updateUser: (id, body) => request(`/usuarios/${id}`, { method: 'PATCH', body }),
 };
 
 export const productsAdminApi = {

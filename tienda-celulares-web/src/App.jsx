@@ -31,6 +31,10 @@ const AccountsPage = lazy(() => import('./pages/panel/AccountsPage'));
 const ReportsPage = lazy(() => import('./pages/panel/ReportsPage'));
 const RestockPage = lazy(() => import('./pages/panel/RestockPage'));
 const BackupPage = lazy(() => import('./pages/panel/BackupPage'));
+const ClientsPage = lazy(() => import('./pages/panel/ClientsPage'));
+const SuppliersPage = lazy(() => import('./pages/panel/SuppliersPage'));
+const PurchasesPage = lazy(() => import('./pages/panel/PurchasesPage'));
+const StaffPage = lazy(() => import('./pages/panel/StaffPage'));
 const AuditPage = lazy(() => import('./pages/panel/AuditPage'));
 const WarrantyAdminPage = lazy(() => import('./pages/panel/WarrantyAdminPage'));
 const RepairsPage = lazy(() => import('./pages/panel/RepairsPage'));
@@ -70,11 +74,15 @@ export default function App() {
             <Route path="reportes" element={<ReportsPage />} />
             <Route path="bitacora" element={<AuditPage />} />
             <Route path="respaldo" element={<BackupPage />} />
+            <Route path="usuarios" element={<StaffPage />} />
           </Route>
           <Route path="inventario" element={<InventoryPage />} />
           <Route path="garantias" element={<WarrantyAdminPage />} />
+          <Route path="clientes" element={<ClientsPage />} />
           <Route element={<RequireAuth roles={[admin, storekeeper]} />}>
             <Route path="reposicion" element={<RestockPage />} />
+            <Route path="compras" element={<PurchasesPage />} />
+            <Route path="proveedores" element={<SuppliersPage />} />
             <Route path="productos" element={<ProductsAdminPage />} />
             <Route path="productos/nuevo" element={<ProductFormPage />} />
             <Route path="productos/:id" element={<ProductFormPage />} />

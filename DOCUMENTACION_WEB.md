@@ -64,3 +64,12 @@ Pruebas automáticas: 123 comprobaciones.
 - **Restauración**: `node scripts/restore-backup.mjs archivo.json` reemplaza los datos de la base de `DATABASE_URL`. Respeta el orden de las llaves foráneas, completa las llaves circulares (sucursal ↔ empleado), desactiva los triggers de stock/IMEI durante la carga (el respaldo ya trae el stock final) y deja los contadores de ID al día. Probado: ida y vuelta con ventas, fotos, cajas y cuentas por cobrar, con cifras idénticas.
 - **Migración a Neon**: ver `MIGRAR_A_NEON.md` (la base gratis de Render se borra a los 30 días). `render.neon.yaml` es el Blueprint para usar una base externa.
 Pruebas automáticas: 127 comprobaciones.
+
+## Fase 5: listo para producción
+- **Modo producción** (`DATOS_DEMO=no`): base vacía con solo catálogos, una sucursal, un almacén y el `admin`; ver `PRODUCCION.md`.
+- **Clave inicial obligatoria**: el administrador inicial y todo usuario creado/restablecido por un administrador deben cambiar su clave en el primer ingreso (el servidor bloquea el resto de la API hasta que lo hacen).
+- **Sesión siempre vigente**: cada petición confirma en la base que el usuario y el empleado siguen Activos y toma el rol actual.
+- **Pantallas nuevas**: *Clientes* (y alta rápida desde la venta), *Proveedores*, *Compras* (ingreso de mercadería con IMEI) y *Personal* (empleados, accesos, roles, restablecer clave).
+- **Reserva de stock**: un pedido de la tienda reserva unidades mientras está Nuevo o Confirmado (`v_stock_reservado`), con bloqueo de filas para que dos pedidos simultáneos no tomen la última unidad.
+- **Cabeceras de seguridad** (helmet) y bitácora de altas/ediciones de personal.
+Pruebas automáticas: 146 comprobaciones; recorrido de producción en navegador sobre base limpia.

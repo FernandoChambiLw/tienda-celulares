@@ -9,7 +9,7 @@ import styles from './PanelLayout.module.css';
 
 // Marco del panel interno: menú lateral (`menu` de Bulma) con las secciones permitidas para el rol.
 export default function PanelLayout() {
-  const { user, logout } = useAuth();
+  const { user, logout, passwordChanged } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
@@ -70,15 +70,25 @@ export default function PanelLayout() {
       </aside>
 
       <main className={styles.main}>
-        <Suspense fallback={<Spinner />}>
-          <Outlet />
-        </Suspense>
+        {/* Con la clave inicial pendiente no se carga nada: solo el aviso para cambiarla. */}
+        {!user.debe_cambiar_clave && (
+          <Suspense fallback={<Spinner />}>
+            <Outlet />
+          </Suspense>
+        )}
       </main>
 
-      {changingPassword && (
+      {user.debe_cambiar_clave && (
+        <ChangePasswordDialog forced onClose={() => {}} onChanged={(result) => {
+          try { window.localStorage.setItem('fx-clave-cambiada', '1'); } catch { /* sin almacenamiento */ }
+          passwordChanged(result);
+        }} />
+      )}
+      {changingPassword && !user.debe_cambiar_clave && (
         <ChangePasswordDialog
           onClose={() => setChangingPassword(false)}
-          onChanged={() => {
+          onChanged={(result) => {
+            passwordChanged(result);
             try {
               window.localStorage.setItem('fx-clave-cambiada', '1');
             } catch {
