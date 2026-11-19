@@ -1,55 +1,63 @@
 /* ---------- Identidad FX TECHNOLOGY ----------
-   Negro del logo + azul eléctrico + blanco. La base visual la pone Bulma;
-   aquí solo se ajustan sus variables y se definen los tokens propios.
-   Los nombres antiguos (--brand, --ink, --line...) se mantienen como alias
-   para que los componentes no necesiten saber qué color exacto usan. */
+   Del logo salen tres cosas: el negro, el azul y el corte en diagonal de la "F".
+   Ese corte se repite en botones, etiquetas de precio y escenarios de producto.
+   Bulma pone la base; aquí se ajustan sus variables y se definen los tokens propios.
+   Los nombres antiguos (--brand, --ink, --line, --clay...) siguen existiendo como alias. */
 :root {
-  --blue-50: #eaf4ff;
-  --blue-100: #cfe6ff;
-  --blue-200: #a6d1ff;
-  --blue-300: #70b5ff;
-  --blue-400: #3d9bff;
-  --blue-500: #0a84ff;
-  --blue-600: #0a6fdb;
-  --blue-700: #0a5ab3;
-  --blue-800: #0b4a94;
-  --blue-900: #082f61;
-  --blue-950: #04101f;
+  --black: #000;
+  --graphite: #151a22;
+  --graphite-2: #232a35;
+  --signal: #0a5cff;
+  --signal-dark: #0846c2;
+
+  --blue-50: #eaf1ff;
+  --blue-100: #d6e4ff;
+  --blue-200: #adc9ff;
+  --blue-300: #7aa6ff;
+  --blue-400: #4d86ff;
+  --blue-500: #1f6bff;
+  --blue-600: #0a5cff;
+  --blue-700: #0846c2;
+  --blue-800: #0a3799;
+  --blue-900: #0b2766;
+  --blue-950: #06142f;
 
   --paper: #ffffff;
-  --sand: #e9eff7;
-  --amber-100: #ffe6d3;
-  --amber-500: #ff8a3d;
-  --clay: #e8590c;
+  --sand: #e6eaf0;
+  --stage: #e8ecf2;
+  --amber-100: #fff1d6;
+  --amber-500: #f59f00;
+  --clay: #c2410c;
 
-  --bg: #f4f7fb;
+  --bg: #eff2f6;
   --surface: #ffffff;
-  --ink: #0b1220;
-  --muted: #566274;
-  --line: #dbe3ee;
-  --brand: var(--blue-700);
-  --brand-dark: var(--blue-900);
+  --ink: #0a0d12;
+  --muted: #5a6473;
+  --line: #d8dee7;
+  --line-strong: #b9c2d0;
+  --brand: var(--signal);
+  --brand-dark: var(--signal-dark);
   --brand-soft: var(--blue-100);
   --accent: var(--clay);
-  --ok: #0f7a4a;
+  --ok: #0b7a46;
   --warn: #8a5200;
   --danger: #b42318;
 
-  --radius: 16px;
-  --radius-lg: 24px;
-  --shadow: 0 1px 2px rgba(4, 16, 31, 0.06), 0 14px 30px -14px rgba(4, 16, 31, 0.25);
+  --radius: 8px;
+  --radius-lg: 10px;
+  --shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.35);
+  --notch: 12px;
 
-  --font-display: 'Bricolage Grotesque Variable', 'Figtree Variable', system-ui, sans-serif;
-  --font: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Unbounded Variable', 'Geist Variable', system-ui, sans-serif;
+  --font: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
-  /* Variables de Bulma 1.x: así sus botones, enlaces y etiquetas usan nuestro azul. */
-  --bulma-primary-h: 211deg;
-  --bulma-primary-s: 90%;
-  --bulma-primary-l: 36%;
+  --bulma-primary-h: 220deg;
+  --bulma-primary-s: 100%;
+  --bulma-primary-l: 48%;
   --bulma-primary-invert-l: 100%;
-  --bulma-link-h: 211deg;
-  --bulma-link-s: 90%;
-  --bulma-link-l: 36%;
+  --bulma-link-h: 220deg;
+  --bulma-link-s: 100%;
+  --bulma-link-l: 48%;
   --bulma-link-invert-l: 100%;
   --bulma-info-h: 205deg;
   --bulma-success-h: 152deg;
@@ -61,9 +69,9 @@
   --bulma-text-strong: var(--ink);
   --bulma-title-color: var(--ink);
   --bulma-subtitle-color: var(--muted);
-  --bulma-radius: 12px;
-  --bulma-radius-large: 20px;
-  --bulma-radius-rounded: 999px;
+  --bulma-radius: 6px;
+  --bulma-radius-large: 10px;
+  --bulma-radius-rounded: 6px;
   --bulma-body-size: 1rem;
 }
 
@@ -72,6 +80,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'tnum' 1, 'cv11' 1;
 }
 
 img,
@@ -79,50 +88,202 @@ svg {
   max-width: 100%;
 }
 
+/* Titulares en Unbounded (ancho y firme); el resto del texto en Geist. */
 h1,
 h2,
-h3,
-h4,
 .title {
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
 }
 
-/* Bulma limita .container con max-width por pantalla; aquí se prefiere un ancho fluido con margen lateral. */
+/* Los títulos de página se mantienen contenidos: el protagonismo es del contenido. */
+.title.is-3 {
+  font-size: clamp(1.4rem, 2.6vw, 1.75rem);
+}
+
+.title.is-4 {
+  font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+}
+
+h3,
+h4 {
+  font-family: var(--font);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+a {
+  color: var(--signal);
+}
+
 .container {
-  width: min(1160px, 100% - 32px);
+  width: min(1200px, 100% - 40px);
   max-width: none;
   margin-inline: auto;
   padding-inline: 0;
 }
 
 .navbar > .container {
-  width: min(1160px, 100% - 32px);
+  width: min(1200px, 100% - 40px);
 }
 
-.eyebrow {
-  display: inline-block;
-  padding: 5px 14px;
-  border-radius: 999px;
-  background: rgba(10, 132, 255, 0.16);
-  color: var(--blue-300);
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
+/* ---------- Botones: esquina inferior derecha cortada, como la F del logo ---------- */
 .button {
-  font-weight: 700;
-  transition: transform 0.18s, background-color 0.18s, border-color 0.18s;
+  height: 44px;
+  padding-inline: 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.button:hover {
-  transform: translateY(-1px);
+.button.is-rounded {
+  border-radius: 6px;
+  padding-inline: 20px;
 }
 
+.button.is-small {
+  height: 34px;
+  padding-inline: 12px;
+}
+
+.button.is-medium {
+  height: 52px;
+  padding-inline: 26px;
+  font-size: 1rem;
+}
+
+.button.is-primary:not(.is-outlined):not(.is-light):not(.is-ghost),
+.button.is-dark:not(.is-outlined),
+.button.is-white:not(.is-outlined) {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  border-color: transparent;
+}
+
+.button.is-medium.is-primary:not(.is-outlined),
+.button.is-medium.is-white:not(.is-outlined) {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+}
+
+.button.is-primary:focus-visible,
+.button.is-dark:focus-visible,
+.button.is-white:focus-visible {
+  clip-path: none;
+}
+
+.button.is-primary.is-outlined,
+.button.is-link.is-outlined {
+  border-width: 1.5px;
+}
+
+.button.is-ghost {
+  color: var(--signal);
+  text-decoration: none;
+}
+
+/* ---------- Superficies ---------- */
+.box,
 .card {
+  border: 1px solid var(--line);
   border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.input,
+.select select,
+.textarea {
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: none;
+  font-family: var(--font);
+}
+
+.input:focus,
+.select select:focus,
+.textarea:focus {
+  border-color: var(--signal);
+  box-shadow: 0 0 0 3px rgba(10, 92, 255, 0.18);
+}
+
+.label {
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.tag {
+  height: 24px;
+  padding-inline: 9px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.notification {
+  border-radius: var(--radius);
+}
+
+.table {
+  background: transparent;
+  color: var(--ink);
+}
+
+.table thead th {
+  border-width: 0 0 1px;
+  border-color: var(--line-strong);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table td,
+.table th {
+  padding: 12px 14px;
+  border-color: var(--line);
+  vertical-align: middle;
+}
+
+.table tbody tr:hover {
+  background: #f6f8fb;
+}
+
+.table.is-striped tbody tr:not(.is-selected):nth-child(even) {
+  background: transparent;
+}
+
+.modal-background {
+  background: rgba(5, 8, 12, 0.62);
+}
+
+.modal-card {
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
+}
+
+.modal-card-head {
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+  padding: 18px 24px;
+}
+
+.modal-card-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.modal-card-foot {
+  border-top: 1px solid var(--line);
+  background: #f7f9fc;
+  gap: 10px;
 }
 
 :focus-visible {
@@ -130,7 +291,6 @@ h4,
   outline-offset: 3px;
 }
 
-/* Quien tiene desactivadas las animaciones en su dispositivo no las verá. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -140,7 +300,6 @@ h4,
   }
 }
 
-/* Al imprimir (o "Guardar como PDF") se ocultan menús y botones. */
 @media print {
   .no-print {
     display: none !important;
@@ -151,7 +310,6 @@ h4,
   }
 }
 
-/* El icono del menú móvil debe verse sobre el fondo negro. */
 .navbar-burger {
   color: #fff;
 }

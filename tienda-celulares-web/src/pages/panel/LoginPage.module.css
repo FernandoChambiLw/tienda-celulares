@@ -3,17 +3,21 @@
   place-items: center;
   min-height: 100vh;
   padding: 24px 16px;
-  background: radial-gradient(900px 400px at 50% 0%, rgba(10, 132, 255, 0.3), transparent 60%), #000;
+  background: #000;
+  border-top: 3px solid var(--signal);
 }
 
 .card {
   width: min(420px, 100%);
   padding: 32px;
+  border: 0;
+  border-radius: 8px;
 }
 
 .logo {
-  margin: 0 auto 12px;
-  border-radius: 14px;
+  display: block;
+  margin: 0 auto 14px;
+  border-radius: 8px;
 }
 
 .back {

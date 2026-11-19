@@ -4,10 +4,20 @@
   gap: 28px;
 }
 
+/* Las cifras forman una sola franja: celdas separadas por líneas finas, no tarjetas sueltas. */
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 14px;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+/* Línea derecha e inferior de cada celda; las del borde exterior quedan recortadas. */
+.stats > * {
+  box-shadow: 1px 1px 0 0 var(--line);
 }
 
 .two {
@@ -18,7 +28,25 @@
 
 .h2 {
   margin-bottom: 12px;
-  font-size: 1.15rem;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.backup {
+  padding: 10px 14px;
+  border-left: 3px solid var(--amber-500);
+  border-radius: 0 6px 6px 0;
+  background: var(--amber-100);
+  color: #5c3a00;
+  font-size: 0.92rem;
+}
+
+.backup a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
 }
 
 .muted {

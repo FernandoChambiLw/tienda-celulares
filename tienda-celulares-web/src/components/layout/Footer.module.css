@@ -1,30 +1,30 @@
 .footer {
   background: #000;
-  color: #b7c3d4;
-  padding-block: 48px 24px;
+  color: #aab4c3;
+  padding-block: 56px 28px;
+  border-top: 3px solid var(--signal);
 }
 
 .slogan {
-  margin-top: 12px;
+  margin-top: 14px;
   max-width: 34ch;
 }
 
 .heading {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 650;
 }
 
 .text {
-  margin: 0;
+  margin: 0 0 4px;
 }
 
 .link {
   display: inline-block;
   margin-top: 8px;
   color: var(--blue-300);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .link:hover {
@@ -32,9 +32,9 @@
 }
 
 .copy {
-  margin-top: 28px;
+  margin-top: 36px;
   padding-top: 18px;
-  border-top: 1px solid #1c2636;
-  color: #7d8aa0;
-  font-size: 0.9rem;
+  border-top: 1px solid #1b212b;
+  color: #7b8696;
+  font-size: 0.88rem;
 }

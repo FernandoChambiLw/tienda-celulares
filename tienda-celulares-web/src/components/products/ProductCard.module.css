@@ -1,19 +1,17 @@
+/* Mosaico: las tarjetas comparten líneas finas en vez de flotar separadas. */
 .card {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 8px 8px 0;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-lg);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0;
   background: var(--surface);
-  box-shadow: none;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.15s;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  border-color: var(--blue-700);
-  box-shadow: var(--shadow);
+  border-color: var(--ink);
 }
 
 .media {
@@ -22,37 +20,35 @@
 
 .ribbon {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 4px 11px;
-  border-radius: 999px;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  padding: 5px 10px;
   background: var(--clay);
   color: #fff;
-  font-size: 0.82rem;
-  font-weight: 800;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .body {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 6px;
-  padding: 14px 10px 10px;
+  gap: 4px;
+  padding: 16px 18px 14px;
   background: transparent;
 }
 
 .brand {
   color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.84rem;
+  font-weight: 500;
 }
 
 .name {
   flex: 1;
-  font-size: 1.1rem;
-  line-height: 1.2;
+  font-size: 1.02rem;
+  line-height: 1.25;
 }
 
 .name a {
@@ -60,14 +56,25 @@
 }
 
 .name a:hover {
-  color: var(--brand);
+  color: var(--signal);
 }
 
 .compare {
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  color: var(--brand);
-  font-weight: 700;
+  height: 46px;
+  border-radius: 0;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 600;
   text-decoration: none;
+}
+
+.compare:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+.compare[aria-pressed='true'] {
+  color: var(--signal);
 }
 
 .foot {
@@ -75,11 +82,11 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 .promo {
   color: var(--clay);
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.84rem;
+  font-weight: 600;
 }

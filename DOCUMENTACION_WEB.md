@@ -12,7 +12,7 @@
 - **Logo:** el de FX TECHNOLOGY (`public/logo-192.png`), sobre fondo negro como en el original.
 - **Paleta:** negro `#000` (barra, portada, pie), azul eléctrico `#0a6fdb` / `#0a84ff` (acciones y acentos), blanco y gris azulado `#f4f7fb` (fondo),
   naranja `#e8590c` solo para descuentos.
-- **Tipografías:** Bricolage Grotesque (títulos) y Figtree (texto), incluidas en el proyecto con `@fontsource-variable`.
+- **Tipografías:** Unbounded (títulos y precios) y Geist (texto), incluidas en el proyecto con `@fontsource-variable`.
 - **Justificación:** el negro y el azul vienen del logo, así la tienda se ve como una sola marca; el azul se reserva para lo que se puede
   pulsar, y el naranja para el precio rebajado, de modo que nada compita por la atención.
 
@@ -73,3 +73,15 @@ Pruebas automáticas: 127 comprobaciones.
 - **Reserva de stock**: un pedido de la tienda reserva unidades mientras está Nuevo o Confirmado (`v_stock_reservado`), con bloqueo de filas para que dos pedidos simultáneos no tomen la última unidad.
 - **Cabeceras de seguridad** (helmet) y bitácora de altas/ediciones de personal.
 Pruebas automáticas: 146 comprobaciones; recorrido de producción en navegador sobre base limpia.
+
+
+## Rediseño visual (v8)
+
+Solo cambió la parte visual; la lógica, la API y la base de datos son las mismas.
+
+- **Idea:** el logo de FX tiene una "F" con un corte en diagonal. Ese corte se repite en botones, escenarios de producto, etiquetas y bloques destacados.
+- **Colores:** negro `#000` (barra, portada, menú), azul señal `#0a5cff` (acciones), gris frío `#eff2f6` (fondo) y ámbar `#f59f00` solo para avisos. Se cambian en `src/styles/global.css` (variables `--signal`, `--graphite`, `--bg`...).
+- **Tipografía:** Unbounded para títulos y precios, Geist para todo lo demás.
+- **Productos:** todos se muestran sobre el mismo escenario gris; cuando subes una foto real desde el panel (Productos), aparece en ese marco. Recomendado: fotos con fondo blanco o liso.
+- **Panel:** menú lateral agrupado (Vender, Almacén, Taller, Administración) con iconos (`src/components/panel/Icon.jsx`, agrupación en `src/config/panel.js`), resumen en una sola franja de cifras y tablas con encabezado gris.
+- **Dónde tocar:** colores y botones en `global.css`; portada en `pages/HomePage*.jsx/css` y `components/home/HeroArt*`; tarjetas en `components/products/`.

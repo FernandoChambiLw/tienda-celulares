@@ -3,7 +3,7 @@
   align-items: flex-end;
   gap: 10px;
   height: 190px;
-  padding: 16px;
+  padding: 18px 20px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
@@ -22,8 +22,9 @@
 
 .bar {
   width: 100%;
+  max-width: 72px;
   min-height: 4px;
-  border-radius: 8px 8px 4px 4px;
+  border-radius: 0;
   background: var(--blue-600);
 }
 

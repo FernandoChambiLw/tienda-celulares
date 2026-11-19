@@ -15,3 +15,23 @@
 .tools :global(.buttons) {
   margin: 0;
 }
+
+/* Tabla sobre un panel blanco con borde fino: la cabecera gris se lee como encabezado, no como dato. */
+.wrap {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.wrap :global(.table) {
+  margin: 0;
+}
+
+.wrap :global(.table thead th) {
+  background: #f6f8fb;
+}
+
+.wrap :global(.table tbody tr:last-child td) {
+  border-bottom: 0;
+}

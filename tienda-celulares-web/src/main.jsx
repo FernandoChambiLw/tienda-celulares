@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 // Fuentes variables incluidas en el proyecto (sin pedirlas a Google).
 // El navegador solo descarga el subconjunto "latin", que cubre el español.
-import '@fontsource-variable/bricolage-grotesque/wght.css';
-import '@fontsource-variable/figtree/wght.css';
+import '@fontsource-variable/unbounded/wght.css';
+import '@fontsource-variable/geist/wght.css';
 // Bulma (framework CSS) va primero: nuestros estilos se cargan después y pueden ajustarlo.
 import 'bulma/css/bulma.min.css';
 import { AuthProvider } from './auth/AuthContext.jsx';

@@ -1,65 +1,59 @@
 .hero {
-  margin-top: -32px; /* pega la portada a la barra: compensa el padding superior de <main> */
-  background: radial-gradient(1200px 500px at 85% 0%, rgba(10, 132, 255, 0.28), transparent 60%), #000;
+  margin-top: -40px; /* pega la portada a la barra: compensa el padding superior de <main> */
+  background: #000;
   color: #fff;
+}
+
+.hero :global(.hero-body) {
+  padding-block: clamp(40px, 7vw, 88px);
 }
 
 .title {
-  max-width: 14ch;
-  margin-top: 16px;
+  max-width: 13ch;
   color: #fff;
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 7vw, 4.2rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.035em;
-}
-
-.title em {
-  font-style: normal;
-  color: var(--blue-300);
+  font-size: clamp(2.1rem, 5.6vw, 3.9rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
 }
 
 .lead {
-  max-width: 46ch;
-  margin-top: 20px;
-  color: #b7c3d4;
-  font-size: 1.12rem;
+  max-width: 44ch;
+  margin-top: 24px;
+  color: #aab4c3;
+  font-size: 1.1rem;
+  line-height: 1.55;
 }
 
 .section {
-  margin-top: 64px;
+  margin-top: 80px;
 }
 
-/* Bloques de distinto tamaño: el primero es el protagonista. */
+/* Tres accesos: el de celulares es el más grande. Cada uno lleva el corte diagonal. */
 .tiles {
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
 
 .tile {
   position: relative;
   min-height: 190px;
   overflow: hidden;
-  border-radius: var(--radius-lg);
-  transition: transform 0.2s;
-}
-
-.tile:hover {
-  transform: translateY(-4px);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%);
 }
 
 .main {
-  background: var(--blue-700);
+  background: var(--graphite);
   color: #fff;
 }
 
 .sand {
-  background: var(--sand);
+  background: var(--stage);
 }
 
 .amber {
-  background: var(--amber-100);
+  background: var(--stage);
 }
 
 .tileLink {
@@ -68,7 +62,7 @@
   align-items: flex-start;
   gap: 6px;
   height: 100%;
-  padding: 24px;
+  padding: 26px;
   color: inherit;
   text-decoration: none;
 }
@@ -79,41 +73,76 @@
 
 .tileTitle {
   font-family: var(--font-display);
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
 }
 
 .tileText {
-  max-width: 24ch;
-  opacity: 0.85;
+  max-width: 26ch;
+  opacity: 0.78;
 }
 
 .tileGo {
   margin-top: auto;
   padding-top: 14px;
-  font-weight: 800;
+  font-weight: 600;
+  border-bottom: 2px solid var(--signal);
+}
+
+.tile:hover .tileGo {
+  border-bottom-color: currentColor;
 }
 
 .tileArt {
   position: absolute;
-  right: -10px;
-  bottom: -16px;
-  width: 46%;
+  right: 6%;
+  bottom: -8%;
+  width: 40%;
   max-width: 190px;
-  transform: rotate(8deg);
+  filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.3));
+}
+
+/* Los pasos sí son una secuencia: una línea los une y el número marca el orden. */
+.steps {
+  display: grid;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .step {
-  height: 100%;
+  position: relative;
+  padding-top: 22px;
+  border-top: 2px solid var(--ink);
+  color: var(--muted);
 }
 
 .stepNumber {
-  color: var(--blue-600);
+  position: absolute;
+  top: -2px;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: var(--signal);
+  color: #fff;
   font-family: var(--font-display);
-  font-size: 2.6rem;
-  font-weight: 800;
-  line-height: 1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transform: translateY(-50%);
+}
+
+.stepTitle {
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-size: 1.1rem;
+}
+
+.step p {
+  max-width: 34ch;
 }
 
 .cta {
@@ -122,23 +151,28 @@
   align-items: flex-start;
   gap: 24px;
   padding: clamp(28px, 5vw, 56px);
-  border-radius: var(--radius-lg);
-  background: #000;
+  background: var(--signal);
   color: #fff;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 36px), calc(100% - 36px) 100%, 0 100%);
 }
 
 .ctaTitle {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   color: #fff;
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
-  font-weight: 800;
+  font-size: clamp(1.5rem, 3.6vw, 2.2rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
 }
 
 .ctaText {
   max-width: 44ch;
-  color: #b7c3d4;
+  color: #dbe6ff;
   font-size: 1.05rem;
+}
+
+.cta :global(.button.is-white) {
+  color: var(--signal-dark);
 }
 
 @media (min-width: 820px) {
@@ -149,6 +183,17 @@
 
   .tiles > :first-child {
     grid-row: span 2;
+  }
+
+  .tiles > :first-child .tileArt {
+    width: 36%;
+    max-width: 230px;
+    right: 10%;
+  }
+
+  .steps {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
   }
 
   .cta {

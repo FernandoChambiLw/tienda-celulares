@@ -33,7 +33,7 @@ const COLOR_HEX = {
   morado: '#6b4fa3',
 };
 
-const DEFAULT_COLOR = '#139069';
+const DEFAULT_COLOR = '#20262f';
 
 export function resolveColor(colorName) {
   return (colorName && COLOR_HEX[normalize(colorName)]) || DEFAULT_COLOR;

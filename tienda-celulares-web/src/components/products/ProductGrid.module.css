@@ -1,5 +1,28 @@
 .grid {
   display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding: 1px 0 0 1px; /* compensa el solape de bordes */
+}
+
+.grid > * {
+  margin: -1px 0 0 -1px;
+}
+
+@media (min-width: 560px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1160px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

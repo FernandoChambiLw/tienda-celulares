@@ -5,6 +5,7 @@ import { PANEL_NAV, canAccess, roleLabel } from '../../config/panel';
 import { site } from '../../config/site';
 import Spinner from '../ui/Spinner';
 import ChangePasswordDialog from './ChangePasswordDialog';
+import Icon from './Icon';
 import styles from './PanelLayout.module.css';
 
 // Marco del panel interno: menú lateral (`menu` de Bulma) con las secciones permitidas para el rol.
@@ -14,6 +15,13 @@ export default function PanelLayout() {
   const [open, setOpen] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const links = PANEL_NAV.filter((item) => canAccess(user.rol, item.roles));
+  // Agrupa respetando el orden: cada cambio de grupo abre una sección nueva del menú.
+  const groups = links.reduce((acc, item) => {
+    const last = acc[acc.length - 1];
+    if (last && last.name === (item.group ?? null)) last.items.push(item);
+    else acc.push({ name: item.group ?? null, items: [item] });
+    return acc;
+  }, []);
 
   const exit = () => {
     logout();
@@ -33,7 +41,7 @@ export default function PanelLayout() {
 
         <button
           type="button"
-          className={`button is-small is-rounded is-outlined is-white ${styles.toggle}`}
+          className={`button is-small is-outlined is-white ${styles.toggle}`}
           aria-expanded={open}
           aria-controls="panel-nav"
           onClick={() => setOpen((value) => !value)}
@@ -42,25 +50,31 @@ export default function PanelLayout() {
         </button>
 
         <nav id="panel-nav" className={`menu ${styles.nav}`} aria-label="Panel">
-          <ul className="menu-list">
-            {links.map(({ to, label, end }) => (
-              <li key={to}>
-                <NavLink
-                  to={to}
-                  end={end}
-                  onClick={() => setOpen(false)}
-                  className={({ isActive }) => (isActive ? 'is-active' : undefined)}
-                >
-                  {label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+          {groups.map(({ name, items }) => (
+            <div key={name ?? 'inicio'} className={styles.group}>
+              {name && <p className={styles.groupName}>{name}</p>}
+              <ul className="menu-list">
+                {items.map(({ to, label, end, icon }) => (
+                  <li key={to}>
+                    <NavLink
+                      to={to}
+                      end={end}
+                      onClick={() => setOpen(false)}
+                      className={({ isActive }) => (isActive ? 'is-active' : undefined)}
+                    >
+                      <Icon name={icon} />
+                      <span>{label}</span>
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
 
         <div className={styles.user}>
           <strong>{user.nombre}</strong>
-          <span className="tag is-primary is-light is-rounded">{roleLabel(user.rol)}</span>
+          <span className={styles.role}>{roleLabel(user.rol)}</span>
           <div className={styles.userActions}>
             <NavLink to="/" className={styles.small}>Ver tienda</NavLink>
             <button type="button" className={styles.small} onClick={() => setChangingPassword(true)}>Cambiar contraseña</button>

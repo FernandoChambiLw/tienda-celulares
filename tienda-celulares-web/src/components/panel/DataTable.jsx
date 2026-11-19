@@ -72,18 +72,18 @@ export default function DataTable({
             }}
           />
           <div className="buttons">
-            <button type="button" className="button is-small is-primary is-outlined is-rounded" onClick={() => downloadCsv(title, columns, filtered)}>
+            <button type="button" className="button is-small is-primary is-outlined" onClick={() => downloadCsv(title, columns, filtered)}>
               Exportar CSV
             </button>
-            <button type="button" className="button is-small is-primary is-outlined is-rounded" onClick={() => window.print()}>
+            <button type="button" className="button is-small is-primary is-outlined" onClick={() => window.print()}>
               Imprimir / PDF
             </button>
           </div>
         </div>
       )}
 
-      <div className="table-container">
-        <table className="table is-fullwidth is-hoverable is-striped">
+      <div className={`table-container ${styles.wrap}`}>
+        <table className="table is-fullwidth is-hoverable">
           <thead>
             <tr>
               {columns.map((col) => (

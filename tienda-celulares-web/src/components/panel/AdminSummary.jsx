@@ -21,7 +21,7 @@ export default function AdminSummary() {
             const dias = data.ultimo_respaldo ? Math.floor((Date.now() - new Date(data.ultimo_respaldo.replace(' ', 'T') + 'Z').getTime()) / 86400000) : null;
             if (dias !== null && dias < 7) return null;
             return (
-              <div className="notification is-warning is-light no-print" role="note">
+              <div className={`${styles.backup} no-print`} role="note">
                 {dias === null ? 'Todavía no hiciste ningún respaldo de tus datos.' : `Tu último respaldo fue hace ${dias} días.`}{' '}
                 <Link to="/panel/respaldo">Descargar respaldo ahora</Link>
               </div>

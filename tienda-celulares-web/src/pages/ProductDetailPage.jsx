@@ -67,7 +67,7 @@ export default function ProductDetailPage() {
               </div>
 
               <div className="column is-6">
-                <p className="has-text-grey is-uppercase has-text-weight-semibold is-size-7">{product.marca}</p>
+                <p className="has-text-grey has-text-weight-medium">{product.marca}</p>
                 <h1 className="title is-2 mt-1">{product.nombre}</h1>
                 {product.descripcion && <p className="mb-4">{product.descripcion}</p>}
 

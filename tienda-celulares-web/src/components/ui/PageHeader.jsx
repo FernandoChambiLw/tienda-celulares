@@ -1,4 +1,4 @@
-// Encabezado de página con las clases `title` y `subtitle` de Bulma.
+// Encabezado de página: título en Unbounded, subtítulo en gris.
 export default function PageHeader({ title, subtitle, children }) {
   return (
     <header className="mb-5">
